@@ -1,0 +1,64 @@
+# Javaを使用するプロジェクトの基本設定
+
+# Compiled class files
+*.class
+
+# Log files
+*.log
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# Maven
+target/
+
+# Gradle
+.gradle/
+build/
+
+# IDEAやEclipseなどのIDE関連の設定ファイル
+.idea/
+*.iml
+*.ipr
+*.iws
+.DS_Store
+*.class
+*.swp
+*.swo
+.project
+.settings/
+bin/
+*.classpath
+.vscode/
+*.factorypath
+
+# IntelliJ IDEA
+# Windowsでの設定
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Eclipse用の設定
+.metadata/
+*.classpath
+*.project
+*.settings/
+bin/
+tmp/
+
+# NetBeans用
+nbproject/private/
+build/
+nbbuild/
+dist/
+nblibraries.properties
+generated-sources/
