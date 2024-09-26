@@ -27,6 +27,10 @@ jobs:
           distribution: 'temurin'   # ここでディストリビューションを指定
           java-version: '17'
 
+      # プロジェクトのルートディレクトリに移動
+      - name: Change directory to project folder
+        run: cd MyPortfolio  # ここで、pom.xmlが存在するディレクトリに移動
+
       # Mavenプロジェクトの依存関係をインストール
       - name: Install dependencies
         run: mvn install -DskipTests
