@@ -31,10 +31,10 @@ jobs:
       - name: Change directory to project folder
         run: cd MyPortfolio  # ここで、pom.xmlが存在するディレクトリに移動
 
-      # Mavenプロジェクトの依存関係をインストール
+      # Mavenプロジェクトの依存関係をインストール（プロジェクトディレクトリを指定）
       - name: Install dependencies
-        run: mvn install -DskipTests
+        run: mvn install -DskipTests -f MyPortfolio/pom.xml
 
-      # Mavenテストを実行
+      # Mavenテストを実行（プロジェクトディレクトリを指定）
       - name: Run tests
-        run: mvn test
+        run: mvn test -f MyPortfolio/pom.xml
