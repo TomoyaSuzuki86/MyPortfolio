@@ -1,0 +1,37 @@
+name: Run Java Tests
+
+on:
+  schedule:
+    # 毎日午前0時にテストを実行
+    - cron: "0 0 * * *"
+  
+  # 任意で、コードのプッシュやプルリクエスト時にも実行
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # ソースコードをチェックアウト
+      - name: Check out the repository
+        uses: actions/checkout@v3
+
+      # Javaをインストール
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+
+      # Mavenプロジェクトの依存関係をインストール
+      - name: Install dependencies
+        run: mvn install -DskipTests
+
+      # Mavenテストを実行
+      - name: Run tests
+        run: mvn test
