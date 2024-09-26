@@ -25,7 +25,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'   # ここでディストリビューションを指定
-          java-version: '17'
+          java-version: '21'
 
       # プロジェクトのルートディレクトリに移動
       - name: Change directory to project folder
