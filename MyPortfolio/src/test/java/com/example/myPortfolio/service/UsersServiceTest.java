@@ -31,7 +31,7 @@ class UsersServiceTest extends UsersService {
   /**
    * ユーザーを正しく作成するテスト。
    * <p>
-   * モックの {@code Users} オブジェクトを使用して、{@link UsersService#createUser(Users)} メソッドが
+   * モックの {@code Users} オブジェクトを使用して、{@link UsersService#createUsers(Users)} メソッドが
    * 正しく動作するかを検証します。
    * 
    * <ul>
@@ -42,19 +42,19 @@ class UsersServiceTest extends UsersService {
    * </ul>
    */
   @Test
-  public void testCreateUser_Success() {
+  public void testCreateUsers_Success() {
     // テスト用のモックユーザーを作成
-    Users mockUser = new Users(null, "test@example.com", "password", null, null);
+    Users mockUsers = new Users(null, "test@example.com", "password", null, null);
 
     // usersRepository.save() メソッドが呼ばれたときにモックユーザーを返すように設定
-    when(usersRepository.save(any(Users.class))).thenReturn(mockUser);
+    when(usersRepository.save(any(Users.class))).thenReturn(mockUsers);
 
-    // UsersServiceのcreateUserメソッドを実行
-    Users createdUser = usersService.createUser(mockUser);
+    // UsersServiceのcreateUsersメソッドを実行
+    Users createdUsers = usersService.createUsers(mockUsers);
 
     // ユーザーが正しく作成されたことを検証
-    assertNotNull(createdUser);
-    assertEquals("test@example.com", createdUser.getEmail());
+    assertNotNull(createdUsers);
+    assertEquals("test@example.com", createdUsers.getEmail());
 
     // usersRepositoryのsaveが1回呼ばれたことを検証
     verify(usersRepository, times(1)).save(any(Users.class));
@@ -74,19 +74,19 @@ class UsersServiceTest extends UsersService {
    * </ul>
    */
   @Test
-  public void testFindByEmail_UserExists() {
+  public void testFindByEmail_UsersExists() {
     // テスト用のモックユーザーを作成
-    Users mockUser = new Users(null, "test@example.com", "password", null, null);
+    Users mockUsers = new Users(null, "test@example.com", "password", null, null);
 
     // usersRepository.findByEmail() メソッドが呼ばれたときにモックユーザーを返すように設定
-    when(usersRepository.findByEmail(anyString())).thenReturn(Optional.of(mockUser));
+    when(usersRepository.findByEmail(anyString())).thenReturn(Optional.of(mockUsers));
 
     // UsersServiceのfindByEmailメソッドを実行
-    Optional<Users> foundUser = usersService.findByEmail("test@example.com");
+    Optional<Users> foundUsers = usersService.findByEmail("test@example.com");
 
     // ユーザーが存在することを検証
-    assertTrue(foundUser.isPresent());
-    assertEquals("test@example.com", foundUser.get().getEmail());
+    assertTrue(foundUsers.isPresent());
+    assertEquals("test@example.com", foundUsers.get().getEmail());
 
     // usersRepositoryのfindByEmailが1回呼ばれたことを検証
     verify(usersRepository, times(1)).findByEmail(anyString());
@@ -104,15 +104,15 @@ class UsersServiceTest extends UsersService {
    * </ul>
    */
   @Test
-  public void testFindByEmail_UserNotFound() {
+  public void testFindByEmail_UsersNotFound() {
     // usersRepository.findByEmail() メソッドが呼ばれたときに空の結果を返すように設定
     when(usersRepository.findByEmail(anyString())).thenReturn(Optional.empty());
 
     // UsersServiceのfindByEmailメソッドを実行
-    Optional<Users> foundUser = usersService.findByEmail("nonexistent@example.com");
+    Optional<Users> foundUsers = usersService.findByEmail("nonexistent@example.com");
 
     // ユーザーが存在しないことを検証
-    assertFalse(foundUser.isPresent());
+    assertFalse(foundUsers.isPresent());
 
     // usersRepositoryのfindByEmailが1回呼ばれたことを検証
     verify(usersRepository, times(1)).findByEmail(anyString());

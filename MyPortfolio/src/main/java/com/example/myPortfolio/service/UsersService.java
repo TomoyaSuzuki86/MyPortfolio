@@ -14,7 +14,7 @@ public class UsersService {
     @Autowired
     private UsersRepository usersRepository;
 
-    public Users createUser(Users users) {
+    public Users createUsers(Users users) {
         // ユーザー作成ロジック
         return usersRepository.save(users);
     }

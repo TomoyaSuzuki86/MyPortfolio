@@ -15,18 +15,18 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.example.myPortfolio.entity.Achievement;
-import com.example.myPortfolio.service.AchievementService;
+import com.example.myPortfolio.entity.Achievements;
+import com.example.myPortfolio.service.AchievementsService;
 
-class AchievementControllerTest extends AchievementController {
+class AchievementsControllerTest extends AchievementsController {
 
-  // モックにするAchievementServiceクラス
+  // モックにするAchievementsServiceクラス
   @Mock
-  private AchievementService achievementService;
+  private AchievementsService achievementsService;
 
-  // テスト対象のAchievementControllerクラス
+  // テスト対象のAchievementsControllerクラス
   @InjectMocks
-  private AchievementController achievementController;
+  private AchievementsController achievementsController;
 
   @BeforeEach
   public void setUp() {
@@ -35,61 +35,61 @@ class AchievementControllerTest extends AchievementController {
   }
 
   @Test
-  public void testCreateAchievement() {
+  public void testCreateAchievements() {
     // モックの振る舞いを設定
-    Achievement mockAchievement = new Achievement(null, null, "Completed task", 120, 0, null, null);
+    Achievements mockAchievements = new Achievements(null, null, "Completed tasks", 120, 0, null, null);
 
-    // サービスのcreateAchievementメソッドが呼ばれたとき、mockAchievementを返す
-    when(achievementService.createAchievement(any(Achievement.class))).thenReturn(mockAchievement);
+    // サービスのcreateAchievementsメソッドが呼ばれたとき、mockAchievementsを返す
+    when(achievementsService.createAchievements(any(Achievements.class))).thenReturn(mockAchievements);
 
-    // コントローラのcreateAchievementメソッドを実行
-    ResponseEntity<Achievement> response = achievementController.createAchievement(mockAchievement);
-
-    // 実績が正しく返されたか確認
-    assertEquals(HttpStatus.OK, response.getStatusCode()); // 修正箇所
-    assertEquals(mockAchievement, response.getBody());
-
-    // サービスのcreateAchievementが1回呼ばれたことを確認
-    verify(achievementService, times(1)).createAchievement(any(Achievement.class));
-  }
-
-  @Test
-  public void testGetAchievementsByTask() {
-    // モックの振る舞いを設定
-    List<Achievement> mockAchievements = new ArrayList<>();
-    Achievement achievement1 = new Achievement(null, null, "First task completed", 60, 0, null, null);
-    mockAchievements.add(achievement1);
-
-    Achievement achievement2 = new Achievement(null, null, "Second task completed", 90, 0, null, null);
-    mockAchievements.add(achievement2);
-
-    // サービスのgetAchievementsByTaskメソッドが呼ばれたとき、mockAchievementsを返す
-    when(achievementService.findByTaskId(anyLong())).thenReturn(mockAchievements);
-
-    // コントローラのgetAchievementsByTaskメソッドを実行
-    ResponseEntity<List<Achievement>> response = achievementController.getAchievementsByTask(1L);
+    // コントローラのcreateAchievementsメソッドを実行
+    ResponseEntity<Achievements> response = achievementsController.createAchievements(mockAchievements);
 
     // 実績が正しく返されたか確認
     assertEquals(HttpStatus.OK, response.getStatusCode()); // 修正箇所
     assertEquals(mockAchievements, response.getBody());
 
-    // サービスのfindByTaskが1回呼ばれたことを確認
-    verify(achievementService, times(1)).findByTaskId(anyLong());
+    // サービスのcreateAchievementsが1回呼ばれたことを確認
+    verify(achievementsService, times(1)).createAchievements(any(Achievements.class));
   }
 
   @Test
-  public void testGetAchievementsByTask_NotFound() {
-    // サービスのfindByTaskメソッドが呼ばれたとき、空のリストを返す
-    when(achievementService.findByTaskId(anyLong())).thenReturn(new ArrayList<>());
+  public void testGetAchievementssByTasks() {
+    // モックの振る舞いを設定
+    List<Achievements> mockAchievementss = new ArrayList<>();
+    Achievements achievements1 = new Achievements(null, null, "First tasks completed", 60, 0, null, null);
+    mockAchievementss.add(achievements1);
 
-    // コントローラのgetAchievementsByTaskメソッドを実行
-    ResponseEntity<List<Achievement>> response = achievementController.getAchievementsByTask(1L);
+    Achievements achievements2 = new Achievements(null, null, "Second tasks completed", 90, 0, null, null);
+    mockAchievementss.add(achievements2);
+
+    // サービスのgetAchievementssByTasksメソッドが呼ばれたとき、mockAchievementssを返す
+    when(achievementsService.findByTasksId(anyLong())).thenReturn(mockAchievementss);
+
+    // コントローラのgetAchievementssByTasksメソッドを実行
+    ResponseEntity<List<Achievements>> response = achievementsController.getAchievementssByTasks(1L);
+
+    // 実績が正しく返されたか確認
+    assertEquals(HttpStatus.OK, response.getStatusCode()); // 修正箇所
+    assertEquals(mockAchievementss, response.getBody());
+
+    // サービスのfindByTasksIdが1回呼ばれたことを確認
+    verify(achievementsService, times(1)).findByTasksId(anyLong());
+  }
+
+  @Test
+  public void testGetAchievementssByTasks_NotFound() {
+    // サービスのfindByTasksIdメソッドが呼ばれたとき、空のリストを返す
+    when(achievementsService.findByTasksId(anyLong())).thenReturn(new ArrayList<>());
+
+    // コントローラのgetAchievementssByTasksメソッドを実行
+    ResponseEntity<List<Achievements>> response = achievementsController.getAchievementssByTasks(1L);
 
     // 実績が見つからない場合、200 OKと空のリストを返す
     assertEquals(HttpStatus.OK, response.getStatusCode()); // 修正箇所
     assertEquals(0, response.getBody().size());
 
-    // サービスのfindByTaskが1回呼ばれたことを確認
-    verify(achievementService, times(1)).findByTaskId(anyLong());
+    // サービスのfindByTasksIdが1回呼ばれたことを確認
+    verify(achievementsService, times(1)).findByTasksId(anyLong());
   }
 }

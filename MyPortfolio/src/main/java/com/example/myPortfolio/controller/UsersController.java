@@ -23,13 +23,13 @@ public class UsersController {
   private UsersService usersService;
 
   @PostMapping("/register")
-  public ResponseEntity<Users> registerUser(@RequestBody Users users) {
-    Users newUsers = usersService.createUser(users);
+  public ResponseEntity<Users> registerUsers(@RequestBody Users users) {
+    Users newUsers = usersService.createUsers(users);
     return ResponseEntity.ok(newUsers);
   }
 
   @GetMapping("/{email}")
-  public ResponseEntity<Users> getUserByEmail(@PathVariable String email) {
+  public ResponseEntity<Users> getUsersByEmail(@PathVariable String email) {
     Optional<Users> users = usersService.findByEmail(email);
     if (users.isEmpty()) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404を返す

@@ -14,23 +14,23 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.example.myPortfolio.entity.Achievement;
-import com.example.myPortfolio.entity.Task;
-import com.example.myPortfolio.repository.AchievementRepository;
-import com.example.myPortfolio.repository.TaskRepository;
+import com.example.myPortfolio.entity.Achievements;
+import com.example.myPortfolio.entity.Tasks;
+import com.example.myPortfolio.repository.AchievementsRepository;
+import com.example.myPortfolio.repository.TasksRepository;
 
-class AchievementServiceTest extends AchievementService {
+class AchievementsServiceTest extends AchievementsService {
 
   // モックにするリポジトリ
   @Mock
-  private AchievementRepository achievementRepository;
+  private AchievementsRepository achievementsRepository;
 
   @Mock
-  private TaskRepository taskRepository;
+  private TasksRepository tasksRepository;
 
-  // テスト対象のAchievementService
+  // テスト対象のAchievementsService
   @InjectMocks
-  private AchievementService achievementService;
+  private AchievementsService achievementsService;
 
   @BeforeEach
   public void setUp() {
@@ -41,108 +41,108 @@ class AchievementServiceTest extends AchievementService {
   /**
    * 実績を正しく作成するテスト。
    * <p>
-   * モックの {@code Achievement}
-   * オブジェクトを使用して、{@link AchievementService#createAchievement(Achievement)} メソッドが
+   * モックの {@code Achievements}
+   * オブジェクトを使用して、{@link AchievementsService#createAchievements(Achievements)} メソッドが
    * 正しく動作するかを検証します。
    * 
    * <ul>
    * <li>モック実績の生成</li>
-   * <li>{@code achievementRepository.save()} が呼ばれたとき、モック実績を返すことを確認</li>
+   * <li>{@code achievementsRepository.save()} が呼ばれたとき、モック実績を返すことを確認</li>
    * <li>実績が正しく作成されたことを検証</li>
-   * <li>{@code achievementRepository.save()} が1回呼ばれたことを検証</li>
+   * <li>{@code achievementsRepository.save()} が1回呼ばれたことを検証</li>
    * </ul>
    */
   @Test
-  public void testCreateAchievement_Success() {
+  public void testCreateAchievements_Success() {
     // テスト用のモック実績を作成
-    Achievement mockAchievement = new Achievement(null, null, "Completed task", 120, 0, null, null);
+    Achievements mockAchievements = new Achievements(null, null, "Completed tasks", 120, 0, null, null);
 
-    // achievementRepository.save() メソッドが呼ばれたときにモック実績を返すように設定
-    when(achievementRepository.save(any(Achievement.class))).thenReturn(mockAchievement);
+    // achievementsRepository.save() メソッドが呼ばれたときにモック実績を返すように設定
+    when(achievementsRepository.save(any(Achievements.class))).thenReturn(mockAchievements);
 
-    // AchievementServiceのcreateAchievementメソッドを実行
-    Achievement createdAchievement = achievementService.createAchievement(mockAchievement);
+    // AchievementsServiceのcreateAchievementsメソッドを実行
+    Achievements createdAchievements = achievementsService.createAchievements(mockAchievements);
 
     // 実績が正しく作成されたことを検証
-    assertNotNull(createdAchievement);
-    assertEquals("Completed task", createdAchievement.getDescription());
+    assertNotNull(createdAchievements);
+    assertEquals("Completed tasks", createdAchievements.getDescription());
 
-    // achievementRepositoryのsaveが1回呼ばれたことを検証
-    verify(achievementRepository, times(1)).save(any(Achievement.class));
+    // achievementsRepositoryのsaveが1回呼ばれたことを検証
+    verify(achievementsRepository, times(1)).save(any(Achievements.class));
   }
 
   /**
    * タスクIDから実績を検索し、該当する実績が存在する場合のテスト。
    * <p>
-   * モックの {@code Task} オブジェクトと {@code Achievement} オブジェクトを使用して、
-   * {@link AchievementService#findByTaskId(Long)} メソッドが正しく動作するかを検証します。
+   * モックの {@code Tasks} オブジェクトと {@code Achievements} オブジェクトを使用して、
+   * {@link AchievementsService#findByTasksId(Long)} メソッドが正しく動作するかを検証します。
    * 
    * <ul>
    * <li>モックタスクと実績リストの生成</li>
-   * <li>{@code taskRepository.findById()} が呼ばれたとき、モックタスクを返すことを確認</li>
-   * <li>{@code achievementRepository.findByTaskAndDeleteFlag()}
+   * <li>{@code tasksRepository.findById()} が呼ばれたとき、モックタスクを返すことを確認</li>
+   * <li>{@code achievementsRepository.findByTasksAndDeleteFlag()}
    * が呼ばれたとき、モック実績を返すことを確認</li>
    * <li>実績が正しく返されたことを検証</li>
    * </ul>
    */
   @Test
-  public void testFindByTaskId_TaskExists() {
+  public void testFindByTasksId_TasksExists() {
     // テスト用のモックタスクを作成
-    Task mockTask = new Task(null, null, "Task 1", 60, 0, null, null);
+    Tasks mockTasks = new Tasks(null, null, "Tasks 1", 60, 0, null, null);
 
     // テスト用のモック実績リストを作成
-    List<Achievement> mockAchievements = new ArrayList<>();
-    mockAchievements.add(new Achievement(null, mockTask, "First achievement", 60, 0, null, null));
-    mockAchievements.add(new Achievement(null, mockTask, "Second achievement", 90, 0, null, null));
+    List<Achievements> mockAchievementss = new ArrayList<>();
+    mockAchievementss.add(new Achievements(null, mockTasks, "First achievements", 60, 0, null, null));
+    mockAchievementss.add(new Achievements(null, mockTasks, "Second achievements", 90, 0, null, null));
 
-    // taskRepository.findById() メソッドが呼ばれたときにモックタスクを返すように設定
-    when(taskRepository.findById(anyLong())).thenReturn(Optional.of(mockTask));
+    // tasksRepository.findById() メソッドが呼ばれたときにモックタスクを返すように設定
+    when(tasksRepository.findById(anyLong())).thenReturn(Optional.of(mockTasks));
 
-    // achievementRepository.findByTaskAndDeleteFlag() メソッドが呼ばれたときにモック実績を返すように設定
-    when(achievementRepository.findByTaskAndDeleteFlag(any(Task.class), anyInt())).thenReturn(mockAchievements);
+    // achievementsRepository.findByTasksAndDeleteFlag() メソッドが呼ばれたときにモック実績を返すように設定
+    when(achievementsRepository.findByTasksAndDeleteFlag(any(Tasks.class), anyInt())).thenReturn(mockAchievementss);
 
-    // AchievementServiceのfindByTaskIdメソッドを実行
-    List<Achievement> foundAchievements = achievementService.findByTaskId(1L);
+    // AchievementsServiceのfindByTasksIdメソッドを実行
+    List<Achievements> foundAchievementss = achievementsService.findByTasksId(1L);
 
     // 実績が正しく返されたことを検証
-    assertFalse(foundAchievements.isEmpty());
-    assertEquals(2, foundAchievements.size());
-    assertEquals("First achievement", foundAchievements.get(0).getDescription());
+    assertFalse(foundAchievementss.isEmpty());
+    assertEquals(2, foundAchievementss.size());
+    assertEquals("First achievements", foundAchievementss.get(0).getDescription());
 
-    // achievementRepositoryのfindByTaskAndDeleteFlagが1回呼ばれたことを検証
-    verify(achievementRepository, times(1)).findByTaskAndDeleteFlag(any(Task.class), anyInt());
+    // achievementsRepositoryのfindByTasksAndDeleteFlagが1回呼ばれたことを検証
+    verify(achievementsRepository, times(1)).findByTasksAndDeleteFlag(any(Tasks.class), anyInt());
   }
 
   /**
    * タスクIDから実績を検索し、該当する実績が存在しない場合のテスト。
    * <p>
-   * {@link AchievementService#findByTaskId(Long)} メソッドが空のリストを返す場合の動作を検証します。
+   * {@link AchievementsService#findByTasksId(Long)} メソッドが空のリストを返す場合の動作を検証します。
    * 
    * <ul>
-   * <li>{@code taskRepository.findById()} が呼ばれたときにモックタスクを返すことを確認</li>
-   * <li>{@code achievementRepository.findByTaskAndDeleteFlag()}
+   * <li>{@code tasksRepository.findById()} が呼ばれたときにモックタスクを返すことを確認</li>
+   * <li>{@code achievementsRepository.findByTasksAndDeleteFlag()}
    * が呼ばれたときに空のリストを返すことを確認</li>
    * <li>実績が存在しないことを検証</li>
    * </ul>
    */
   @Test
-  public void testFindByTaskId_NoAchievements() {
+  public void testFindByTasksId_NoAchievementss() {
     // テスト用のモックタスクを作成
-    Task mockTask = new Task(null, null, "Task 1", 60, 0, null, null);
+    Tasks mockTasks = new Tasks(null, null, "Tasks 1", 60, 0, null, null);
 
-    // taskRepository.findById() メソッドが呼ばれたときにモックタスクを返すように設定
-    when(taskRepository.findById(anyLong())).thenReturn(Optional.of(mockTask));
+    // tasksRepository.findById() メソッドが呼ばれたときにモックタスクを返すように設定
+    when(tasksRepository.findById(anyLong())).thenReturn(Optional.of(mockTasks));
 
-    // achievementRepository.findByTaskAndDeleteFlag() メソッドが呼ばれたときに空のリストを返すように設定
-    when(achievementRepository.findByTaskAndDeleteFlag(any(Task.class), anyInt())).thenReturn(new ArrayList<>());
+    // achievementsRepository.findByTasksAndDeleteFlag() メソッドが呼ばれたときに空のリストを返すように設定
+    when(achievementsRepository.findByTasksAndDeleteFlag(any(Tasks.class), anyInt())).thenReturn(new ArrayList<>());
 
-    // AchievementServiceのfindByTaskIdメソッドを実行
-    List<Achievement> foundAchievements = achievementService.findByTaskId(1L);
+    // AchievementsServiceのfindByTasksIdメソッドを実行
+    List<Achievements> foundAchievementss = achievementsService.findByTasksId(1L);
 
     // 実績が存在しないことを検証
-    assertTrue(foundAchievements.isEmpty());
+    assertTrue(foundAchievementss.isEmpty());
 
-    // achievementRepositoryのfindByTaskAndDeleteFlagが1回呼ばれたことを検証
-    verify(achievementRepository, times(1)).findByTaskAndDeleteFlag(any(Task.class), anyInt());
+    // achievementsRepositoryのfindByTasksAndDeleteFlagが1回呼ばれたことを検証
+    verify(achievementsRepository, times(1)).findByTasksAndDeleteFlag(any(Tasks.class), anyInt());
   }
 }

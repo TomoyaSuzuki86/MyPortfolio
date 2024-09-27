@@ -12,25 +12,25 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.myPortfolio.entity.Task;
-import com.example.myPortfolio.service.TaskService;
+import com.example.myPortfolio.entity.Tasks;
+import com.example.myPortfolio.service.TasksService;
 
 @RestController
 @RequestMapping("/tasks")
-public class TaskController {
+public class TasksController {
 
   @Autowired
-  private TaskService taskService;
+  private TasksService tasksService;
 
   @PostMapping
-  public ResponseEntity<Task> createTask(@RequestBody Task task) {
-    Task newTask = taskService.createTask(task);
-    return ResponseEntity.ok(newTask);
+  public ResponseEntity<Tasks> createTasks(@RequestBody Tasks tasks) {
+    Tasks newTasks = tasksService.createTasks(tasks);
+    return ResponseEntity.ok(newTasks);
   }
 
-  @GetMapping("/{userId}")
-  public ResponseEntity<List<Task>> getTasksByUser(@PathVariable Long userId) {
-    List<Task> tasks = taskService.findAllByUserId(userId);
+  @GetMapping("/{usersId}")
+  public ResponseEntity<List<Tasks>> getTasksByUsers(@PathVariable Long usersId) {
+    List<Tasks> tasks = tasksService.findAllByUsersId(usersId);
     if (tasks.isEmpty()) {
       return ResponseEntity.ok(new ArrayList<>()); // 空のリストを返す
     }

@@ -18,15 +18,15 @@ import lombok.Getter;
 @Entity
 @Getter
 @AllArgsConstructor
-public class Achievement {
+public class Achievements {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "task_id", nullable = false)
-    private Task task;
+    @JoinColumn(name = "tasks_id", nullable = false)
+    private Tasks tasks;
 
     @Column(length = 50)
     private String description;

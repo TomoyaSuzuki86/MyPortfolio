@@ -23,7 +23,7 @@ class UsersControllerTest extends UsersController {
   @Mock
   private UsersService usersService;
 
-  // テスト対象のUserControllerクラス
+  // テスト対象のUsersControllerクラス
   @InjectMocks
   private UsersController usersController;
 
@@ -34,34 +34,34 @@ class UsersControllerTest extends UsersController {
   }
 
   @Test
-  public void testRegisterUser() {
+  public void testRegisterUsers() {
     // モックの振る舞いを設定
     Users mockUsers = new Users(null, "test@example.com", "password", null, null);
 
-    // サービスのsaveメソッドが呼ばれたとき、mockUserを返す
-    when(usersService.createUser(any(Users.class))).thenReturn(mockUsers);
+    // サービスのsaveメソッドが呼ばれたとき、mockUsersを返す
+    when(usersService.createUsers(any(Users.class))).thenReturn(mockUsers);
 
     // コントローラのregisterUsersメソッドを実行
-    ResponseEntity<Users> response = usersController.registerUser(mockUsers);
+    ResponseEntity<Users> response = usersController.registerUsers(mockUsers);
 
     // ユーザーが正しく返されたか確認
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertEquals(mockUsers, response.getBody());
 
     // サービスのcreateUsersが1回呼ばれたことを確認
-    verify(usersService, times(1)).createUser(any(Users.class));
+    verify(usersService, times(1)).createUsers(any(Users.class));
   }
 
   @Test
-  public void testGetUserByEmail() {
+  public void testGetUsersByEmail() {
     // モックの振る舞いを設定
     Users mockUsers = new Users(null, "test@example.com", "password", null, null);
 
-    // サービスのfindByEmailメソッドが呼ばれたとき、mockUserを返す
+    // サービスのfindByEmailメソッドが呼ばれたとき、mockUsersを返す
     when(usersService.findByEmail(anyString())).thenReturn(Optional.of(mockUsers));
 
-    // コントローラのgetUserByEmailメソッドを実行
-    ResponseEntity<Users> response = usersController.getUserByEmail("test@example.com");
+    // コントローラのgetUsersByEmailメソッドを実行
+    ResponseEntity<Users> response = usersController.getUsersByEmail("test@example.com");
 
     // ユーザーが正しく返されたか確認
     assertEquals(HttpStatus.OK, response.getStatusCode()); // 修正箇所
@@ -72,12 +72,12 @@ class UsersControllerTest extends UsersController {
   }
 
   @Test
-  public void testGetUserByEmail_NotFound() {
+  public void testGetUsersByEmail_NotFound() {
     // サービスのfindByEmailメソッドが呼ばれたとき、空の結果を返す
     when(usersService.findByEmail(anyString())).thenReturn(Optional.empty());
 
-    // コントローラのgetUserByEmailメソッドを実行
-    ResponseEntity<Users> response = usersController.getUserByEmail("nonexistent@example.com");
+    // コントローラのgetUsersByEmailメソッドを実行
+    ResponseEntity<Users> response = usersController.getUsersByEmail("nonexistent@example.com");
 
     // ユーザーが見つからない場合、404 Not Foundを返す
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode()); // 修正箇所
