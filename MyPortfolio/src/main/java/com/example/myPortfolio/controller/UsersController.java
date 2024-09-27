@@ -12,28 +12,28 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.myPortfolio.entity.User;
-import com.example.myPortfolio.service.UserService;
+import com.example.myPortfolio.entity.Users;
+import com.example.myPortfolio.service.UsersService;
 
 @RestController
 @RequestMapping("/users")
-public class UserController {
+public class UsersController {
 
   @Autowired
-  private UserService userService;
+  private UsersService usersService;
 
   @PostMapping("/register")
-  public ResponseEntity<User> registerUser(@RequestBody User user) {
-    User newUser = userService.createUser(user);
-    return ResponseEntity.ok(newUser);
+  public ResponseEntity<Users> registerUser(@RequestBody Users users) {
+    Users newUsers = usersService.createUser(users);
+    return ResponseEntity.ok(newUsers);
   }
 
   @GetMapping("/{email}")
-  public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
-    Optional<User> user = userService.findByEmail(email);
-    if (user.isEmpty()) {
+  public ResponseEntity<Users> getUserByEmail(@PathVariable String email) {
+    Optional<Users> users = usersService.findByEmail(email);
+    if (users.isEmpty()) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404を返す
     }
-    return ResponseEntity.ok(user.get()); // 成功した場合のリストを返す
+    return ResponseEntity.ok(users.get()); // 成功した場合のリストを返す
   }
 }

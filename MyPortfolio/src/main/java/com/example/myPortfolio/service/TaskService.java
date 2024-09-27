@@ -7,9 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.myPortfolio.entity.Task;
-import com.example.myPortfolio.entity.User;
+import com.example.myPortfolio.entity.Users;
 import com.example.myPortfolio.repository.TaskRepository;
-import com.example.myPortfolio.repository.UserRepository;
+import com.example.myPortfolio.repository.UsersRepository;
 
 @Service
 public class TaskService {
@@ -18,7 +18,7 @@ public class TaskService {
   private TaskRepository taskRepository;
 
   @Autowired
-  private UserRepository userRepository;
+  private UsersRepository userRepository;
 
   public Task createTask(Task task) {
     // タスク作成ロジック
@@ -26,7 +26,7 @@ public class TaskService {
   }
 
   public List<Task> findAllByUserId(Long userId) {
-    User user = userRepository.findById(userId).orElse(null);
+    Users user = userRepository.findById(userId).orElse(null);
     if (user != null) {
       return taskRepository.findByUserAndDeleteFlag(user, 0);
     }

@@ -14,18 +14,18 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.example.myPortfolio.entity.User;
-import com.example.myPortfolio.service.UserService;
+import com.example.myPortfolio.entity.Users;
+import com.example.myPortfolio.service.UsersService;
 
-class UserControllerTest extends UserController {
+class UsersControllerTest extends UsersController {
 
-  // モックにするUserServiceクラス
+  // モックにするUsersServiceクラス
   @Mock
-  private UserService userService;
+  private UsersService usersService;
 
   // テスト対象のUserControllerクラス
   @InjectMocks
-  private UserController userController;
+  private UsersController usersController;
 
   @BeforeEach
   public void setUp() {
@@ -36,53 +36,53 @@ class UserControllerTest extends UserController {
   @Test
   public void testRegisterUser() {
     // モックの振る舞いを設定
-    User mockUser = new User(null, "test@example.com", "password", null, null);
+    Users mockUsers = new Users(null, "test@example.com", "password", null, null);
 
     // サービスのsaveメソッドが呼ばれたとき、mockUserを返す
-    when(userService.createUser(any(User.class))).thenReturn(mockUser);
+    when(usersService.createUser(any(Users.class))).thenReturn(mockUsers);
 
-    // コントローラのregisterUserメソッドを実行
-    ResponseEntity<User> response = userController.registerUser(mockUser);
+    // コントローラのregisterUsersメソッドを実行
+    ResponseEntity<Users> response = usersController.registerUser(mockUsers);
 
     // ユーザーが正しく返されたか確認
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertEquals(mockUser, response.getBody());
+    assertEquals(mockUsers, response.getBody());
 
-    // サービスのcreateUserが1回呼ばれたことを確認
-    verify(userService, times(1)).createUser(any(User.class));
+    // サービスのcreateUsersが1回呼ばれたことを確認
+    verify(usersService, times(1)).createUser(any(Users.class));
   }
 
   @Test
   public void testGetUserByEmail() {
     // モックの振る舞いを設定
-    User mockUser = new User(null, "test@example.com", "password", null, null);
+    Users mockUsers = new Users(null, "test@example.com", "password", null, null);
 
     // サービスのfindByEmailメソッドが呼ばれたとき、mockUserを返す
-    when(userService.findByEmail(anyString())).thenReturn(Optional.of(mockUser));
+    when(usersService.findByEmail(anyString())).thenReturn(Optional.of(mockUsers));
 
     // コントローラのgetUserByEmailメソッドを実行
-    ResponseEntity<User> response = userController.getUserByEmail("test@example.com");
+    ResponseEntity<Users> response = usersController.getUserByEmail("test@example.com");
 
     // ユーザーが正しく返されたか確認
     assertEquals(HttpStatus.OK, response.getStatusCode()); // 修正箇所
-    assertEquals(mockUser, response.getBody());
+    assertEquals(mockUsers, response.getBody());
 
     // サービスのfindByEmailが1回呼ばれたことを確認
-    verify(userService, times(1)).findByEmail(anyString());
+    verify(usersService, times(1)).findByEmail(anyString());
   }
 
   @Test
   public void testGetUserByEmail_NotFound() {
     // サービスのfindByEmailメソッドが呼ばれたとき、空の結果を返す
-    when(userService.findByEmail(anyString())).thenReturn(Optional.empty());
+    when(usersService.findByEmail(anyString())).thenReturn(Optional.empty());
 
     // コントローラのgetUserByEmailメソッドを実行
-    ResponseEntity<User> response = userController.getUserByEmail("nonexistent@example.com");
+    ResponseEntity<Users> response = usersController.getUserByEmail("nonexistent@example.com");
 
     // ユーザーが見つからない場合、404 Not Foundを返す
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode()); // 修正箇所
 
     // サービスのfindByEmailが1回呼ばれたことを確認
-    verify(userService, times(1)).findByEmail(anyString());
+    verify(usersService, times(1)).findByEmail(anyString());
   }
 }
