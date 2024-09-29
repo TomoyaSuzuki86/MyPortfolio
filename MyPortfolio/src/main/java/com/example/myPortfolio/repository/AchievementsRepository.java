@@ -9,4 +9,6 @@ import com.example.myPortfolio.entity.Tasks;
 
 public interface AchievementsRepository extends JpaRepository<Achievements, Long> {
   List<Achievements> findByTasksAndDeleteFlag(Tasks tasks, int deleteFlag);
+
+  List<Achievements> findByTasksIdAndDeleteFlag(Long tasksId, int deleteFlag);
 }
