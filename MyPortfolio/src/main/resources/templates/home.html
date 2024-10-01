@@ -52,7 +52,11 @@
 	<div class="container">
 		<div class="title">ホーム画面</div>
 		<div class="task-list">
-			<h3>今日のタスク一覧</h3>
+			<h3>今日のタスク一覧
+				<!-- タスク追加ボタン -->
+				<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#taskEditModal">タスク追加</button>
+
+			</h3>
 			<table>
 				<thead>
 					<tr>
@@ -76,9 +80,6 @@
 
 	</div>
 
-	<!-- タスク編集ボタン -->
-	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#taskEditModal">タスク編集</button>
-
 	<div class="summary-container">
 		<div th:each="task : ${homeForm.tasksList}" class="summary-item">
 			<h4 th:text="${task.taskName}"></h4>
@@ -93,19 +94,19 @@
 		</div>
 	</div>
 
-	<!-- タスク編集用のモーダル画面 -->
+	<!-- タスク追加用のモーダル画面 -->
 	<div class="modal fade" id="taskEditModal" tabindex="-1" role="dialog" aria-labelledby="taskEditModalLabel"
 		aria-hidden="true">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title" id="taskEditModalLabel">タスク編集</h5>
+					<h5 class="modal-title" id="taskEditModalLabel">タスク追加</h5>
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
 				<div class="modal-body">
-					<!-- タスク編集用フォーム -->
+					<!-- タスク追加用フォーム -->
 					<form id="taskEditForm" th:action="@{/home/editTask}" method="post">
 						<!-- タスクIDをhiddenで保持 -->
 						<input type="hidden" id="taskId" name="taskId" value="1">
