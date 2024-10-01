@@ -31,7 +31,7 @@ public class LoginController {
   }
 
   @PostMapping
-  public String login(@RequestParam String email, @RequestParam String password, HttpSession session) {
+  public String login(@RequestParam(required = false) String email, @RequestParam(required = false) String password, HttpSession session, Model model) {
     Optional<Users> userOpt = usersService.authenticateUser(email, password);
 
     if (userOpt.isPresent()) {
@@ -39,6 +39,8 @@ public class LoginController {
       session.setAttribute("userId", userOpt.get().getId());
       return "redirect:/home";
     } else {
+      model.addAttribute("error", "ユーザーが見つかりませんでした");
+      model.addAttribute("loginForm", new LoginForm()); // LoginFormを追加
       return "login"; // ログイン失敗時
     }
   }
