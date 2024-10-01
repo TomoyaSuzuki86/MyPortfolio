@@ -92,14 +92,14 @@ public class TasksService {
       task = this.findByIdAndUsersId(userId, taskId).orElseThrow(() -> new TaskNotFoundException("不正なタスクIDが設定されています"));
       task.setTaskName(taskName);
       task.setTargetTime(targetTime);
-
+      this.updateTask(task);
     } else {
       // タスクIDが指定されていない場合は新規作成
       task = this.createTask(user, taskName, targetTime); // タスクの登録
     }
 
     // タスクをデータベースに保存
-    return this.updateTask(task);
+    return task;
   }
   
   /**

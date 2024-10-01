@@ -16,133 +16,194 @@ import org.mockito.MockitoAnnotations;
 
 import com.example.myPortfolio.entity.Tasks;
 import com.example.myPortfolio.entity.Users;
+import com.example.myPortfolio.exception.InvalidUserException;
+import com.example.myPortfolio.exception.TaskNotFoundException;
+import com.example.myPortfolio.exception.UserNotFoundException;
+import com.example.myPortfolio.form.TaskForm;
+import com.example.myPortfolio.mapper.TaskMapper;
 import com.example.myPortfolio.repository.TasksRepository;
-import com.example.myPortfolio.repository.UsersRepository;
 
 class TasksServiceTest extends TasksService {
 
-  // モックにするリポジトリ
-  @Mock
-  private TasksRepository tasksRepository;
+    @Mock
+    private UsersService usersService;
 
-  @Mock
-  private UsersRepository usersRepository;
+    @Mock
+    private SessionService sessionService;
 
-  // テスト対象のTasksService
-  @InjectMocks
-  private TasksService tasksService;
+    @Mock
+    private TasksRepository tasksRepository;
 
-  @BeforeEach
-  public void setUp() {
-    // Mockitoの初期化
-    MockitoAnnotations.openMocks(this);
-  }
+    @Mock
+    private TaskMapper taskMapper;
 
-  /**
-   * タスクを正しく作成するテスト。
-   * <p>
-   * モックの {@code Tasks} オブジェクトを使用して、{@link TasksService#createTasks(Tasks)} メソッドが
-   * 正しく動作するかを検証します。
-   * 
-   * <ul>
-   * <li>モックタスクの生成</li>
-   * <li>{@code tasksRepository.save()} が呼ばれたとき、モックタスクを返すことを確認</li>
-   * <li>タスクが正しく作成されたことを検証</li>
-   * <li>{@code tasksRepository.save()} が1回呼ばれたことを検証</li>
-   * </ul>
-   */
-  @Test
-  public void testCreateTasks_Success() {
-    // テスト用のモックタスクを作成
-    Tasks mockTasks = new Tasks(null, null, "Sample Tasks", 120, 0, null, null);
+    @InjectMocks
+    private TasksService tasksService;
 
-    // tasksRepository.save() メソッドが呼ばれたときにモックタスクを返すように設定
-    when(tasksRepository.save(any(Tasks.class))).thenReturn(mockTasks);
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
 
-    // TaskServiceのcreateTasksメソッドを実行
-    Tasks createdTasks = tasksService.createTasks(mockTasks);
+    /**
+     * ユーザーIDに紐づくタスクのリストを取得するテスト。
+     * <p>
+     * ユーザーIDが正しく渡された場合に、リポジトリからタスクが取得されるかを確認します。
+     * </p>
+     */
+    @Test
+    void testFindByUserId_Success() {
+        // モックユーザーとタスクリストを設定
+        List<Tasks> mockTasks = new ArrayList<>();
+        mockTasks.add(new Tasks(null, "Task 1", 60));
+        mockTasks.add(new Tasks(null, "Task 2", 90));
 
-    // タスクが正しく作成されたことを検証
-    assertNotNull(createdTasks);
-    assertEquals("Sample Tasks", createdTasks.getTaskName());
+        when(tasksRepository.findByUsersIdAndDeleteFlag(1L, 0)).thenReturn(mockTasks);
 
-    // tasksRepositoryのsaveが1回呼ばれたことを検証
-    verify(tasksRepository, times(1)).save(any(Tasks.class));
-  }
+        List<Tasks> result = tasksService.findByUserId(1L);
 
-  /**
-   * ユーザーIDからタスクを検索し、該当するタスクが存在する場合のテスト。
-   * <p>
-   * モックの {@code Tasks} オブジェクトと {@code Users} オブジェクトを使用して、
-   * {@link TasksService#findAllByUsersId(Long)} メソッドが正しく動作するかを検証します。
-   * 
-   * <ul>
-   * <li>モックユーザーとタスクリストの生成</li>
-   * <li>{@code usersRepository.findById()} が呼ばれたとき、モックユーザーを返すことを確認</li>
-   * <li>{@code tasksRepository.findByUsersAndDeleteFlag()} が呼ばれたとき、モックタスクを返すことを確認
-   * </li>
-   * <li>タスクが正しく返されたことを検証</li>
-   * <li>{@code tasksRepository.findByUsersAndDeleteFlag()} が1回呼ばれたことを検証</li>
-   * </ul>
-   */
-  @Test
-  public void testFindAllByUsersId_UsersExists() {
-    // テスト用のモックユーザーを作成
-    Users mockUsers = new Users(null, "test@example.com", "password", null, null);
+        assertEquals(2, result.size());
+        assertEquals("Task 1", result.get(0).getTaskName());
+        verify(tasksRepository, times(1)).findByUsersIdAndDeleteFlag(1L, 0);
+    }
 
-    // テスト用のモックタスクリストを作成
-    List<Tasks> mockTasks = new ArrayList<>();
-    mockTasks.add(new Tasks(null, mockUsers, "Tasks 1", 60, 0, null, null));
-    mockTasks.add(new Tasks(null, mockUsers, "Tasks 2", 90, 0, null, null));
+    /**
+     * 新しいタスクを作成するテスト。
+     * <p>
+     * セッションから取得したユーザーIDに対して新規タスクを作成できるかを検証します。
+     * </p>
+     */
+    @Test
+    void testSaveOrUpdateTask_CreateNewTask() throws Exception {
+        // モックのユーザー設定
+        Users mockUser = new Users("test@example.com", "password");
 
-    // usersRepository.findById() メソッドが呼ばれたときにモックユーザーを返すように設定
-    when(usersRepository.findById(anyLong())).thenReturn(Optional.of(mockUsers));
+        when(sessionService.getLoggedInUserId()).thenReturn(Optional.of(1L));
+        when(usersService.findById(1L)).thenReturn(Optional.of(mockUser));
 
-    // tasksRepository.findByUsersAndDeleteFlag() メソッドが呼ばれたときにモックタスクを返すように設定
-    when(tasksRepository.findByUsersAndDeleteFlag(any(Users.class), anyInt())).thenReturn(mockTasks);
+        Tasks mockTask = new Tasks(mockUser, "New Task", 120);
+        when(tasksRepository.save(any(Tasks.class))).thenReturn(mockTask);
 
-    // TasksServiceのfindAllByUsersIdメソッドを実行
-    List<Tasks> foundTasks = tasksService.findAllByUsersId(1L);
+        Tasks result = tasksService.saveOrUpdateTask(null, "New Task", 120);
 
-    // タスクが正しく返されたことを検証
-    assertFalse(foundTasks.isEmpty());
-    assertEquals(2, foundTasks.size());
-    assertEquals("Tasks 1", foundTasks.get(0).getTaskName());
+        assertEquals("New Task", result.getTaskName());
+        assertEquals(120, result.getTargetTime());
+        verify(tasksRepository, times(1)).save(any(Tasks.class));
+    }
 
-    // tasksRepositoryのfindByUsersAndDeleteFlagが1回呼ばれたことを検証
-    verify(tasksRepository, times(1)).findByUsersAndDeleteFlag(any(Users.class), anyInt());
-  }
+    /**
+     * 既存のタスクを更新するテスト。
+     * <p>
+     * セッションから取得したユーザーIDに対して既存タスクを正しく更新できるかを検証します。
+     * </p>
+     */
+    @Test
+    void testSaveOrUpdateTask_UpdateExistingTask() throws Exception {
+        Users mockUser = new Users("test@example.com", "password");
+        Tasks existingTask = new Tasks(mockUser, "Old Task", 60);
+        existingTask.setId(1L);
 
-  /**
-   * ユーザーIDからタスクを検索し、該当するタスクが存在しない場合のテスト。
-   * <p>
-   * {@link TasksService#findAllByUsersId(Long)} メソッドが空のリストを返す場合の動作を検証します。
-   * 
-   * <ul>
-   * <li>{@code usersRepository.findById()} が呼ばれたときにモックユーザーを返すことを確認</li>
-   * <li>{@code tasksRepository.findByUsersAndDeleteFlag()} が呼ばれたときに空のリストを返すことを確認
-   * </li>
-   * <li>タスクが存在しないことを検証</li>
-   * </ul>
-   */
-  @Test
-  public void testFindAllByUsersId_NoTasks() {
-    // テスト用のモックユーザーを作成
-    Users mockUsers = new Users(null, "test@example.com", "password", null, null);
+        when(sessionService.getLoggedInUserId()).thenReturn(Optional.of(1L));
+        when(usersService.findById(1L)).thenReturn(Optional.of(mockUser));
+        when(tasksRepository.findByIdAndUsersId(1L, 1L)).thenReturn(Optional.of(existingTask));
 
-    // usersRepository.findById() メソッドが呼ばれたときにモックユーザーを返すように設定
-    when(usersRepository.findById(anyLong())).thenReturn(Optional.of(mockUsers));
+        existingTask.setTaskName("Updated Task");
+        existingTask.setTargetTime(90);
 
-    // tasksRepository.findByUsersAndDeleteFlag() メソッドが呼ばれたときに空のリストを返すように設定
-    when(tasksRepository.findByUsersAndDeleteFlag(any(Users.class), anyInt())).thenReturn(new ArrayList<>());
+        when(tasksRepository.save(any(Tasks.class))).thenReturn(existingTask);
 
-    // TasksServiceのfindAllByUsersIdメソッドを実行
-    List<Tasks> foundTasks = tasksService.findAllByUsersId(1L);
+        Tasks result = tasksService.saveOrUpdateTask(1L, "Updated Task", 90);
 
-    // タスクが存在しないことを検証
-    assertTrue(foundTasks.isEmpty());
+        assertEquals("Updated Task", result.getTaskName());
+        assertEquals(90, result.getTargetTime());
+        verify(tasksRepository, times(1)).save(any(Tasks.class));
+    }
 
-    // tasksRepositoryのfindByUsersAndDeleteFlagが1回呼ばれたことを検証
-    verify(tasksRepository, times(1)).findByUsersAndDeleteFlag(any(Users.class), anyInt());
-  }
+    /**
+     * ユーザー情報がセッションに見つからない場合の例外処理テスト。
+     * <p>
+     * セッションにユーザー情報がない場合、`InvalidUserException` がスローされるか確認します。
+     * </p>
+     */
+    @Test
+    void testSaveOrUpdateTask_InvalidUserException() {
+        when(sessionService.getLoggedInUserId()).thenReturn(Optional.empty());
+
+        InvalidUserException exception = assertThrows(InvalidUserException.class, () -> {
+            tasksService.saveOrUpdateTask(null, "Task", 60);
+        });
+
+        assertEquals("セッションにユーザー情報が見つかりません", exception.getMessage());
+    }
+
+    /**
+     * 存在しないユーザーIDの場合の例外処理テスト。
+     * <p>
+     * `UserNotFoundException` がスローされるか確認します。
+     * </p>
+     */
+    @Test
+    void testSaveOrUpdateTask_UserNotFoundException() {
+        when(sessionService.getLoggedInUserId()).thenReturn(Optional.of(1L));
+        when(usersService.findById(1L)).thenReturn(Optional.empty());
+
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> {
+            tasksService.saveOrUpdateTask(null, "Task", 60);
+        });
+
+        assertEquals("不正なユーザーIDが設定されています", exception.getMessage());
+    }
+
+    /**
+     * 存在しないタスクIDの場合の例外処理テスト。
+     * <p>
+     * `TaskNotFoundException` がスローされるか確認します。
+     * </p>
+     */
+    @Test
+    void testSaveOrUpdateTask_TaskNotFoundException() {
+        Users mockUser = new Users("test@example.com", "password");
+
+        when(sessionService.getLoggedInUserId()).thenReturn(Optional.of(1L));
+        when(usersService.findById(1L)).thenReturn(Optional.of(mockUser));
+        when(tasksRepository.findByIdAndUsersId(1L, 999L)).thenReturn(Optional.empty());
+
+        TaskNotFoundException exception = assertThrows(TaskNotFoundException.class, () -> {
+            tasksService.saveOrUpdateTask(999L, "Task", 60);
+        });
+
+        assertEquals("不正なタスクIDが設定されています", exception.getMessage());
+    }
+
+    /**
+     * ユーザーIDに紐づくタスクフォームリストの取得テスト。
+     * <p>
+     * タスクエンティティから正しくフォーム形式に変換されるかを確認します。
+     * </p>
+     */
+    @Test
+    void testGetTaskFormsByUserId() {
+        Users mockUser = new Users("test@example.com", "password");
+        List<Tasks> mockTasks = new ArrayList<>();
+        mockTasks.add(new Tasks(mockUser, "Task 1", 60));
+        mockTasks.add(new Tasks(mockUser, "Task 2", 90));
+
+        TaskForm mockTaskForm1 = new TaskForm();
+        mockTaskForm1.setTaskName("Task 1");
+        mockTaskForm1.setTargetTime(60);
+
+        TaskForm mockTaskForm2 = new TaskForm();
+        mockTaskForm2.setTaskName("Task 2");
+        mockTaskForm2.setTargetTime(90);
+
+        when(tasksRepository.findByUsersIdAndDeleteFlag(1L, 0)).thenReturn(mockTasks);
+        when(taskMapper.toForm(mockTasks.get(0))).thenReturn(mockTaskForm1);
+        when(taskMapper.toForm(mockTasks.get(1))).thenReturn(mockTaskForm2);
+
+        List<TaskForm> result = tasksService.getTaskFormsByUserId(1L);
+
+        assertEquals(2, result.size());
+        assertEquals("Task 1", result.get(0).getTaskName());
+        assertEquals("Task 2", result.get(1).getTaskName());
+    }
 }

@@ -17,104 +17,135 @@ import com.example.myPortfolio.repository.UsersRepository;
 
 class UsersServiceTest extends UsersService {
 
-  @Mock
-  private UsersRepository usersRepository;
+    @Mock
+    private UsersRepository usersRepository;
 
-  @InjectMocks
-  private UsersService usersService;
+    @InjectMocks
+    private UsersService usersService;
 
-  @BeforeEach
-  public void setUp() {
-    MockitoAnnotations.openMocks(this);
-  }
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
 
-  /**
-   * ユーザーを正しく作成するテスト。
-   * <p>
-   * モックの {@code Users} オブジェクトを使用して、{@link UsersService#createUsers(Users)} メソッドが
-   * 正しく動作するかを検証します。
-   * 
-   * <ul>
-   * <li>モックユーザーの生成</li>
-   * <li>{@code usersRepository.save()} が呼ばれたとき、モックユーザーを返すことを確認</li>
-   * <li>ユーザーが正しく作成されたことを検証</li>
-   * <li>{@code usersRepository.save()} が1回呼ばれたことを検証</li>
-   * </ul>
-   */
-  @Test
-  public void testCreateUsers_Success() {
-    // テスト用のモックユーザーを作成
-    Users mockUsers = new Users(null, "test@example.com", "password", null, null);
+    /**
+     * 新しいユーザーを登録するテスト。
+     * {@code usersRepository.save()} が呼ばれたとき、登録されたユーザーを返すか確認。
+     */
+    @Test
+    void testCreateUsers_Success() {
+        // テスト用のユーザーオブジェクト
+        Users mockUser = new Users();
+        mockUser.setEmail("test@example.com");
+        mockUser.setPassword("password");
 
-    // usersRepository.save() メソッドが呼ばれたときにモックユーザーを返すように設定
-    when(usersRepository.save(any(Users.class))).thenReturn(mockUsers);
+        // usersRepository.save() が呼ばれたとき、モックユーザーを返すように設定
+        when(usersRepository.save(any(Users.class))).thenReturn(mockUser);
 
-    // UsersServiceのcreateUsersメソッドを実行
-    Users createdUsers = usersService.createUsers(mockUsers);
+        // UsersService の createUsers メソッドを実行
+        Users result = usersService.createUsers(mockUser);
 
-    // ユーザーが正しく作成されたことを検証
-    assertNotNull(createdUsers);
-    assertEquals("test@example.com", createdUsers.getEmail());
+        // 結果を検証
+        assertNotNull(result);
+        assertEquals("test@example.com", result.getEmail());
+        verify(usersRepository, times(1)).save(any(Users.class));
+    }
 
-    // usersRepositoryのsaveが1回呼ばれたことを検証
-    verify(usersRepository, times(1)).save(any(Users.class));
-  }
+    /**
+     * メールアドレスとパスワードでユーザーを認証するテスト。
+     * 正しいメールアドレスとパスワードを指定したとき、ユーザー情報が返されるか確認。
+     */
+    @Test
+    void testAuthenticateUser_Success() {
+        Users mockUser = new Users();
+        mockUser.setEmail("test@example.com");
+        mockUser.setPassword("password");
 
-  /**
-   * メールアドレスからユーザーを検索し、該当するユーザーが存在する場合のテスト。
-   * <p>
-   * モックの {@code Users} オブジェクトを使用して、{@link UsersService#findByEmail(String)} メソッドが
-   * 正しく動作するかを検証します。
-   * 
-   * <ul>
-   * <li>モックユーザーの生成</li>
-   * <li>{@code usersRepository.findByEmail()} が呼ばれたとき、モックユーザーを返すことを確認</li>
-   * <li>ユーザーが存在することを検証</li>
-   * <li>{@code usersRepository.findByEmail()} が1回呼ばれたことを検証</li>
-   * </ul>
-   */
-  @Test
-  public void testFindByEmail_UsersExists() {
-    // テスト用のモックユーザーを作成
-    Users mockUsers = new Users(null, "test@example.com", "password", null, null);
+        // usersRepository.findByEmailAndPassword() が呼ばれたとき、モックユーザーを返すように設定
+        when(usersRepository.findByEmailAndPassword("test@example.com", "password")).thenReturn(Optional.of(mockUser));
 
-    // usersRepository.findByEmail() メソッドが呼ばれたときにモックユーザーを返すように設定
-    when(usersRepository.findByEmail(anyString())).thenReturn(Optional.of(mockUsers));
+        Optional<Users> result = usersService.authenticateUser("test@example.com", "password");
 
-    // UsersServiceのfindByEmailメソッドを実行
-    Optional<Users> foundUsers = usersService.findByEmail("test@example.com");
+        // 結果を検証
+        assertTrue(result.isPresent());
+        assertEquals("test@example.com", result.get().getEmail());
+        verify(usersRepository, times(1)).findByEmailAndPassword("test@example.com", "password");
+    }
 
-    // ユーザーが存在することを検証
-    assertTrue(foundUsers.isPresent());
-    assertEquals("test@example.com", foundUsers.get().getEmail());
+    /**
+     * 誤ったメールアドレスまたはパスワードを指定したとき、空の結果が返されるかを確認するテスト。
+     */
+    @Test
+    void testAuthenticateUser_Failure() {
+        when(usersRepository.findByEmailAndPassword(anyString(), anyString())).thenReturn(Optional.empty());
 
-    // usersRepositoryのfindByEmailが1回呼ばれたことを検証
-    verify(usersRepository, times(1)).findByEmail(anyString());
-  }
+        Optional<Users> result = usersService.authenticateUser("wrong@example.com", "wrongpassword");
 
-  /**
-   * メールアドレスからユーザーを検索し、該当するユーザーが存在しない場合のテスト。
-   * <p>
-   * {@link UsersService#findByEmail(String)} メソッドが空の結果を返す場合の動作を検証します。
-   * 
-   * <ul>
-   * <li>{@code usersRepository.findByEmail()} が呼ばれたときに空の結果を返すことを確認</li>
-   * <li>ユーザーが存在しないことを検証</li>
-   * <li>{@code usersRepository.findByEmail()} が1回呼ばれたことを検証</li>
-   * </ul>
-   */
-  @Test
-  public void testFindByEmail_UsersNotFound() {
-    // usersRepository.findByEmail() メソッドが呼ばれたときに空の結果を返すように設定
-    when(usersRepository.findByEmail(anyString())).thenReturn(Optional.empty());
+        // 認証が失敗することを確認
+        assertFalse(result.isPresent());
+        verify(usersRepository, times(1)).findByEmailAndPassword("wrong@example.com", "wrongpassword");
+    }
 
-    // UsersServiceのfindByEmailメソッドを実行
-    Optional<Users> foundUsers = usersService.findByEmail("nonexistent@example.com");
+    /**
+     * ユーザーIDでユーザーを検索するテスト。
+     * 存在するユーザーIDを指定したとき、ユーザー情報が返されるか確認。
+     */
+    @Test
+    void testFindById_Success() {
+        Users mockUser = new Users();
+        mockUser.setId(1L);
+        mockUser.setEmail("test@example.com");
 
-    // ユーザーが存在しないことを検証
-    assertFalse(foundUsers.isPresent());
+        when(usersRepository.findById(1L)).thenReturn(Optional.of(mockUser));
 
-    // usersRepositoryのfindByEmailが1回呼ばれたことを検証
-    verify(usersRepository, times(1)).findByEmail(anyString());
-  }
+        Optional<Users> result = usersService.findById(1L);
+
+        assertTrue(result.isPresent());
+        assertEquals(1L, result.get().getId());
+        verify(usersRepository, times(1)).findById(1L);
+    }
+
+    /**
+     * 存在しないユーザーIDを指定したとき、空の結果が返されるか確認するテスト。
+     */
+    @Test
+    void testFindById_NotFound() {
+        when(usersRepository.findById(999L)).thenReturn(Optional.empty());
+
+        Optional<Users> result = usersService.findById(999L);
+
+        assertFalse(result.isPresent());
+        verify(usersRepository, times(1)).findById(999L);
+    }
+
+    /**
+     * メールアドレスでユーザーを検索するテスト。
+     * 存在するメールアドレスを指定したとき、ユーザー情報が返されるか確認。
+     */
+    @Test
+    void testFindByEmail_Success() {
+        Users mockUser = new Users();
+        mockUser.setEmail("test@example.com");
+
+        when(usersRepository.findByEmail("test@example.com")).thenReturn(Optional.of(mockUser));
+
+        Optional<Users> result = usersService.findByEmail("test@example.com");
+
+        assertTrue(result.isPresent());
+        assertEquals("test@example.com", result.get().getEmail());
+        verify(usersRepository, times(1)).findByEmail("test@example.com");
+    }
+
+    /**
+     * 存在しないメールアドレスを指定したとき、空の結果が返されるか確認するテスト。
+     */
+    @Test
+    void testFindByEmail_NotFound() {
+        when(usersRepository.findByEmail("notfound@example.com")).thenReturn(Optional.empty());
+
+        Optional<Users> result = usersService.findByEmail("notfound@example.com");
+
+        assertFalse(result.isPresent());
+        verify(usersRepository, times(1)).findByEmail("notfound@example.com");
+    }
 }
