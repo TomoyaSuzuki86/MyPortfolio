@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import com.example.myPortfolio.entity.Achievements;
 import com.example.myPortfolio.entity.Tasks;
@@ -57,5 +58,19 @@ public class AchievementsService {
   public void deleteAchievement(Achievements achievement) {
     achievement.withDeleteFlag(1);
     achievementsRepository.save(achievement);
+  }
+
+  /**
+   * タスクIDに紐づくすべての実績を取得し、実績時間の合計を算出する
+   */
+  public int calcSumAchievementTime(long tasksId) {
+    List<Achievements> achievementsList = this.findByTasksId(tasksId);
+    if (CollectionUtils.isEmpty(achievementsList)) {
+      return 0;
+    }
+
+    final int sumAchievementTime = achievementsList.stream().map(Achievements::getActualTime).reduce(0, (a, b) -> a + b);
+
+    return sumAchievementTime;
   }
 }

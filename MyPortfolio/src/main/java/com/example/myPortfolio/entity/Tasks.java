@@ -41,9 +41,6 @@ public class Tasks {
   private int targetTime;
 
   @Column(nullable = false)
-  private int actualTime;
-
-  @Column(nullable = false)
   private int deleteFlag;
 
   @Temporal(TemporalType.TIMESTAMP)
@@ -63,7 +60,6 @@ public class Tasks {
     this.users = users;
     this.taskName = taskName;
     this.targetTime = targetTime;
-    this.actualTime = 0; // 初期実績時間は0
     this.deleteFlag = 0;
   }
   
