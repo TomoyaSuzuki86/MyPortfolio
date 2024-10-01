@@ -24,7 +24,10 @@ public class TasksService {
 
   @Autowired
   private SessionService sessionService;
-  
+
+  @Autowired
+  private AchievementsService achivementsService;
+
   @Autowired
   private TasksRepository tasksRepository;
   
@@ -147,6 +150,8 @@ public class TasksService {
   public void deleteTask(Tasks task) {
     task.withDeleteFlag(1);
     tasksRepository.save(task);
+
+    achivementsService.deleteAchievementFromTaskId(task.getId());
   }
 
 }
