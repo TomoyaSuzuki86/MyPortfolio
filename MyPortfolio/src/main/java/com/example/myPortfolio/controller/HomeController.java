@@ -84,4 +84,26 @@ public class HomeController {
       return "home";
     }
   }
+
+  /**
+   * タスク削除処理
+   *
+   * @param taskId 削除対象のタスクID
+   * @return ホーム画面へのリダイレクト
+   */
+  @PostMapping("/deleteTask")
+  public String deleteTask(@RequestParam Long taskId, Model model) {
+    try {
+      Optional<Tasks> optionalTask = tasksService.findById(taskId);
+      if (optionalTask.isPresent()) {
+        Tasks task = optionalTask.get();
+        tasksService.deleteTask(task);
+      } else {
+        model.addAttribute("error", "指定されたタスクが見つかりません。");
+      }
+    } catch (Exception e) {
+      model.addAttribute("error", "タスクの削除に失敗しました: " + e.getMessage());
+    }
+    return "redirect:/home"; // 削除完了後、ホーム画面へリダイレクト
+  }
 }

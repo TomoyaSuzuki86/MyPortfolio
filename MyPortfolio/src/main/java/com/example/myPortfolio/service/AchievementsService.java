@@ -59,6 +59,21 @@ public class AchievementsService {
     achievement.withDeleteFlag(1);
     achievementsRepository.save(achievement);
   }
+  
+  /**
+   * タスクIDに紐づくすべての実績を削除する
+   * 
+   * @param tasksId タスクID
+   */
+  public void deleteAchievementFromTaskId(Long tasksId) {
+    List<Achievements> achievementsList = this.findByTasksId(tasksId);
+    if(CollectionUtils.isEmpty(achievementsList)) {
+      return;
+    }
+    for(Achievements achievements : achievementsList) {
+      this.deleteAchievement(achievements);
+    }
+  }
 
   /**
    * タスクIDに紐づくすべての実績を取得し、実績時間の合計を算出する
