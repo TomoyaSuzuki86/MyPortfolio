@@ -10,6 +10,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
@@ -22,17 +24,24 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class Users {
+public class Tasks {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(nullable = false, unique = true)
-  private String email;
+  @ManyToOne
+  @JoinColumn(name = "users_id", nullable = false)
+  private Users users;
+
+  @Column(nullable = false, length = 50)
+  private String taskName;
 
   @Column(nullable = false)
-  private String password;
+  private int targetTime;
+
+  @Column(nullable = false)
+  private int deleteFlag;
 
   @Temporal(TemporalType.TIMESTAMP)
   private Date createdAt;
@@ -40,18 +49,26 @@ public class Users {
   @Temporal(TemporalType.TIMESTAMP)
   private Date updatedAt;
 
-  @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<Tasks> tasksList = new ArrayList<>();
+  @OneToMany(mappedBy = "tasks", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Achievements> achievementsList = new ArrayList<>();
 
-  public Users() {
+  public Tasks() {
     // デフォルトコンストラクタ
   }
 
-  public Users(String email, String password) {
-    this.email = email;
-    this.password = password;
+  public Tasks(Users users, String taskName, int targetTime) {
+    this.users = users;
+    this.taskName = taskName;
+    this.targetTime = targetTime;
+    this.deleteFlag = 0;
   }
-
+  
+  // 削除フラグを設定するメソッド (Builder Pattern)
+  public Tasks withDeleteFlag(int deleteFlag) {
+    this.deleteFlag = deleteFlag;
+    return this; // 自身のインスタンスを返す
+  }
+  
   @PrePersist
   protected void onCreate() {
     createdAt = new Date();

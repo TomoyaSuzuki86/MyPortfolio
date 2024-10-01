@@ -1,16 +1,14 @@
 package com.example.myPortfolio.entity;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Temporal;
@@ -22,17 +20,24 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class Users {
+public class Achievements {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(nullable = false, unique = true)
-  private String email;
+  @ManyToOne
+  @JoinColumn(name = "tasks_id", nullable = false)
+  private Tasks tasks;
+
+  @Column(length = 50)
+  private String description;
 
   @Column(nullable = false)
-  private String password;
+  private int actualTime;
+
+  @Column(nullable = false)
+  private int deleteFlag;
 
   @Temporal(TemporalType.TIMESTAMP)
   private Date createdAt;
@@ -40,16 +45,20 @@ public class Users {
   @Temporal(TemporalType.TIMESTAMP)
   private Date updatedAt;
 
-  @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<Tasks> tasksList = new ArrayList<>();
-
-  public Users() {
+  public Achievements() {
     // デフォルトコンストラクタ
   }
 
-  public Users(String email, String password) {
-    this.email = email;
-    this.password = password;
+  public Achievements(Tasks tasks, String description, int actualTime) {
+    this.tasks = tasks;
+    this.description = description;
+    this.actualTime = actualTime;
+    this.deleteFlag = 0;
+  }
+
+  public Achievements withDeleteFlag(int deleteFlag) {
+    this.deleteFlag = deleteFlag;
+    return this;
   }
 
   @PrePersist
