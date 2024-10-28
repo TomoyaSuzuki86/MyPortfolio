@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.myPortfolio.entity.Users;
+import com.example.myPortfolio.exception.DuplicateEmailException;
 import com.example.myPortfolio.repository.UsersRepository;
 
 @Service
@@ -19,9 +20,17 @@ public class UsersService {
    * 
    * @param users 登録するユーザー情報
    * @return 登録されたユーザー
+   * @throws DuplicateEmailException メールアドレスが既に存在する場合
    */
   public Users createUsers(Users users) {
+    // 既に同じメールアドレスのユーザーが存在しないか確認
+    Optional<Users> existingUser = usersRepository.findByEmail(users.getEmail());
+    if (existingUser.isPresent()) {
+      throw new DuplicateEmailException("メールアドレス " + users.getEmail() + " は既に使用されています。");
+    }
+
     return usersRepository.save(users);
+
   }
 
   /**
