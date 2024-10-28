@@ -1,7 +1,5 @@
 package com.example.myPortfolio.controller;
 
-import java.util.Optional;
-
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.myPortfolio.entity.Users;
+import com.example.myPortfolio.exception.InvalidPasswordException;
+import com.example.myPortfolio.exception.InvalidUserException;
 import com.example.myPortfolio.form.LoginForm;
 import com.example.myPortfolio.service.UsersService;
 
@@ -31,17 +31,21 @@ public class LoginController {
   }
 
   @PostMapping
-  public String login(@RequestParam(required = false) String email, @RequestParam(required = false) String password, HttpSession session, Model model) {
-    Optional<Users> userOpt = usersService.authenticateUser(email, password);
-
-    if (userOpt.isPresent()) {
+  public String login(@RequestParam(required = false) String email, @RequestParam(required = false) String password,
+      HttpSession session, Model model) {
+    try {
+      Users user = usersService.authenticateUser(email, password);
       // ユーザーが存在する場合、セッションにユーザーIDを保存
-      session.setAttribute("userId", userOpt.get().getId());
+      session.setAttribute("userId", user.getId());
       return "redirect:/home";
-    } else {
-      model.addAttribute("error", "ユーザーが見つかりませんでした");
-      model.addAttribute("loginForm", new LoginForm()); // LoginFormを追加
-      return "login"; // ログイン失敗時
+
+    } catch (InvalidUserException e) {
+      model.addAttribute("error", e.getMessage());
+    } catch (InvalidPasswordException e) {
+      model.addAttribute("error", e.getMessage());
     }
+
+    model.addAttribute("loginForm", new LoginForm()); // LoginFormを追加
+    return "login"; // ログイン失敗時
   }
 }
