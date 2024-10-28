@@ -106,4 +106,15 @@ public class HomeController {
     }
     return "redirect:/home"; // 削除完了後、ホーム画面へリダイレクト
   }
+  
+  /**
+   * ログアウト処理
+   *
+   * @return ログイン画面へのリダイレクト
+   */
+  @GetMapping("/logout")
+  public String logout() {
+    httpSession.invalidate(); // セッションを無効化して、ユーザー情報をクリア
+    return "redirect:/login"; // ログイン画面にリダイレクト
+  }
 }
