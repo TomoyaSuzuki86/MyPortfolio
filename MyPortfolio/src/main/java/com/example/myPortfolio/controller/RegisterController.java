@@ -35,7 +35,7 @@ public class RegisterController {
       usersService.createUsers(newUser);
       return "redirect:/login"; // 登録成功後、ログイン画面にリダイレクト
     } catch (Exception e) {
-      model.addAttribute("error", "Registration failed: " + e.getMessage());
+      model.addAttribute("error", e.getMessage());
       return "register"; // エラーメッセージを表示してregister.htmlを再表示
     }
   }

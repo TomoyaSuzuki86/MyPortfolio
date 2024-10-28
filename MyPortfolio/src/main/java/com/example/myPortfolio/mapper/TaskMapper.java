@@ -29,7 +29,7 @@ public class TaskMapper {
     }
 
     // 実績時間を算出
-    final int achievementsTime = achievementsService.calcSumAchievementTime(tasks.getId());
+    final int achievementsTime = achievementsService.calcTodaySumAchievementTime(tasks.getId());
 
     // 達成率を計算 (実績時間 / 目標時間 * 100)
     int achievementRate = tasks.getTargetTime() > 0 ? (int) ((achievementsTime / (double) tasks.getTargetTime()) * 100)

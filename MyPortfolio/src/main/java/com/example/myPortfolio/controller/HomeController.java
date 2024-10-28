@@ -46,6 +46,12 @@ public class HomeController {
     if (userId != null) {
       // HomeForm オブジェクトを作成して、ユーザーのタスク情報を格納
       HomeForm homeForm = new HomeForm(tasksService.getTaskFormsByUserId(userId));
+
+      // すべてのタスクが100%以上の達成率を持つか確認
+      boolean hasAchievement100 = homeForm.getTasksList().stream().allMatch(task -> task.getAchievementRate() >= 100);
+
+      homeForm.setHasAchievement100(hasAchievement100); // フラグをセット
+
       model.addAttribute("homeForm", homeForm);
       return "home";
     } else {
@@ -105,5 +111,16 @@ public class HomeController {
       model.addAttribute("error", "タスクの削除に失敗しました: " + e.getMessage());
     }
     return "redirect:/home"; // 削除完了後、ホーム画面へリダイレクト
+  }
+  
+  /**
+   * ログアウト処理
+   *
+   * @return ログイン画面へのリダイレクト
+   */
+  @GetMapping("/logout")
+  public String logout() {
+    httpSession.invalidate(); // セッションを無効化して、ユーザー情報をクリア
+    return "redirect:/login"; // ログイン画面にリダイレクト
   }
 }
