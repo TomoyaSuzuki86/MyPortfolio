@@ -3,30 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <title>ユーザー登録</title>
+    <link rel="stylesheet" href="/css/common_styles.css">
 </head>
 <body>
-    <h2>ユーザー登録</h2>
-    
-    <!-- エラーメッセージを表示 -->
-    <div th:if="${error}">
-        <p style="color: red;" th:text="${error}"></p>
+    <div class="container">
+        <h2>ユーザー登録</h2>
+        
+        <!-- エラーメッセージを表示 -->
+        <div th:if="${error}" class="alert alert-danger">
+            <p th:text="${error}"></p>
+        </div>
+
+        <!-- ユーザー登録フォーム -->
+        <form th:action="@{/register}" th:object="${registerForm}" method="post">
+            <div class="form-group">
+                <label for="email">メールアドレス:</label>
+                <input type="text" id="email" th:field="*{email}" placeholder="example@example.com" class="form-control"/>
+                <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label for="password">パスワード:</label>
+                <input type="password" id="password" th:field="*{password}" placeholder="パスワード" class="form-control"/>
+                <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">登録</button>
+        </form>
+
+        <p class="link"><a th:href="@{/login}">ログインはこちら</a></p>
     </div>
-
-    <!-- ユーザー登録フォーム -->
-    <form th:action="@{/register}" th:object="${registerForm}" method="post">
-        <div>
-            <label for="email">メールアドレス:</label>
-            <input type="text" id="email" th:field="*{email}" placeholder="example@example.com"/>
-            <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
-        </div>
-        <div>
-            <label for="password">パスワード:</label>
-            <input type="password" id="password" th:field="*{password}" placeholder="パスワード"/>
-            <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
-        </div>
-        <button type="submit">登録</button>
-    </form>
-
-    <p><a th:href="@{/login}">ログインはこちら</a></p>
 </body>
 </html>

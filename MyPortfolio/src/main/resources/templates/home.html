@@ -6,57 +6,144 @@
 	<title>ホーム画面</title>
 	<!-- BootstrapのCSSを追加 -->
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/css/common_styles.css">
 	<style>
 		body {
-			font-family: Arial, sans-serif;
+			background-color: #f4f8fc;
+			font-family: 'Arial', sans-serif;
+			color: #333;
+			height: 100%;
+		}
+
+		.container {
+			max-width: 900px;
+			margin: 40px auto;
+			padding: 20px;
+			background: #ffffff;
+			border-radius: 8px;
+			box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+		}
+
+		.title {
+			font-size: 2rem;
+			font-weight: bold;
+			color: #0066cc;
+			text-align: center;
+			margin-bottom: 30px;
+		}
+
+		.task-list-header {
+			font-size: 1.4rem;
+			color: #444;
+			font-weight: bold;
+			margin-bottom: 20px;
 		}
 
 		table {
 			width: 100%;
 			border-collapse: collapse;
+			margin-bottom: 20px;
 		}
 
 		th,
 		td {
-			padding: 8px;
-			text-align: left;
-			border: 1px solid #ddd;
+			padding: 12px;
+			text-align: center;
+			border-bottom: 1px solid #e1e1e1;
+			cursor: pointer;
 		}
 
 		th {
-			background-color: #f2f2f2;
+			background-color: #e9f4ff;
+			color: #333;
+			font-weight: bold;
 		}
 
-		.container {
-			margin: 20px;
+		td {
+			background-color: #ffffff;
+			color: #555;
 		}
 
-		.title {
-			font-size: 24px;
-			margin-bottom: 20px;
+		.btn-primary {
+			display: block;
+			width: fit-content;
+			margin: 20px auto;
+			padding: 10px 20px;
+			background-color: #007bff;
+			border: none;
+			border-radius: 4px;
+			font-weight: bold;
+		}
+
+		.btn-primary:hover {
+			background-color: #0056b3;
 		}
 
 		.summary-container {
-			display: flex;
-			justify-content: space-around;
-			margin-top: 20px;
+			margin-top: 30px;
+			padding: 20px;
+			background: #e9f4ff;
+			border-radius: 8px;
 		}
 
-		.summary-item {
+		.summary-title {
 			text-align: center;
+			font-size: 1.6rem;
+			color: #0066cc;
+			font-weight: bold;
+			margin-bottom: 20px;
 		}
 
-		.btn-danger {
-			padding: 2px 5px;
+		.circle {
+			width: 150px;
+			height: 150px;
+			margin: 0 auto;
+			position: relative;
 		}
 
-		.modal-header .close {
-			padding: 1rem 1rem;
-			margin: -1rem -1rem -1rem 0;
+		.circle svg {
+			position: absolute;
+			top: 0;
+			left: 0;
 		}
 
-		.delete-task {
-			margin: 0rem 1rem 0rem auto;
+		.circle div {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			font-size: 1.5rem;
+			color: #007bff;
+			font-weight: bold;
+		}
+
+		.logout-button {
+			position: relative;
+			display: block;
+			width: 100%;
+			text-align: right;
+			background-color: transparent;
+			border: none;
+			color: #0066cc;
+			font-size: 1rem;
+			text-decoration: underline;
+			cursor: pointer;
+		}
+
+		.task-edit-button {
+			display: inline-block;
+			margin: 15px 0;
+			background-color: #007bff;
+			color: #fff;
+			padding: 8px 16px;
+			border: none;
+			border-radius: 4px;
+			text-align: center;
+			text-decoration: none;
+		}
+
+		.task-edit-button:hover {
+			background-color: #0056b3;
 		}
 
 		.celebration {
@@ -69,39 +156,33 @@
 			justify-content: center;
 			align-items: center;
 			background: rgba(0, 0, 0, 0.7);
-			/* 背景を少し暗くする */
 			z-index: 1000;
 			display: none;
-			/* 初期状態では非表示 */
 		}
 
 		.celebration img {
 			width: 100%;
-			/* 最大幅を設定 */
 			height: auto;
+		}
+
+		.modal-header .close {
+			padding: 1rem 1rem;
+			margin: -1rem -1rem -1rem 0;
 		}
 	</style>
 </head>
 
 <body>
 	<div class="container">
+		<a class="logout-button" th:href="@{/home/logout}">
+			<i class="fas fa-sign-out-alt logout-icon"></i> ログアウト
+		</a>
 		<div class="title">ホーム画面</div>
-		<a href="/home/logout" class="btn btn-outline-danger float-right">ログアウト</a>
 
-
-		<!-- エラーメッセージを表示 -->
-		<div th:if="${error}">
-			<p style="color: red;" th:text="${error}"></p>
-		</div>
-
+		<!-- 今日のタスク一覧 -->
 		<div class="task-list">
-			<h3>今日のタスク一覧
-				<!-- タスク追加ボタン -->
-				<button type="button" class="btn btn-primary" data-toggle="modal"
-					data-target="#taskEditModal">タスク追加</button>
-
-			</h3>
-			<table>
+			<div class="task-list-header">今日のタスク一覧</div>
+			<table class="table">
 				<thead>
 					<tr>
 						<th>タスク名</th>
@@ -120,94 +201,107 @@
 					</tr>
 				</tbody>
 			</table>
+			<button type="button" class="btn btn-primary" data-toggle="modal"
+				data-target="#taskEditModal">タスク追加</button>
 		</div>
 
-	</div>
-
-	<div class="summary-container">
-		<div th:each="task : ${homeForm.tasksList}" class="summary-item">
-			<h4 th:text="${task.taskName}"></h4>
-			<div class="circle">
-				<svg width="100" height="100">
-					<circle cx="50" cy="50" r="40" stroke="grey" stroke-width="10" fill="none" />
-					<circle cx="50" cy="50" r="40" stroke="blue" stroke-width="10" fill="none" stroke-dasharray="251"
-						th:attr="stroke-dashoffset=${251 - (task.achievementRate / 100.0) * 251}" />
-				</svg>
-				<div th:text="${task.achievementRate} + '%'"></div>
+		<!-- 進捗サマリ -->
+		<div class="summary-container">
+			<div class="summary-title">進捗サマリ</div>
+			<div class="row">
+				<div th:each="task : ${homeForm.tasksList}" class="col-md-6 text-center mb-4">
+					<h4 th:text="${task.taskName}">タスク名</h4>
+					<div class="circle">
+						<svg width="150" height="150">
+							<circle cx="75" cy="75" r="60" stroke="#ddd" stroke-width="10" fill="none" />
+							<circle cx="75" cy="75" r="60" stroke="#007bff" stroke-width="10" fill="none"
+								stroke-dasharray="377"
+								th:attr="stroke-dashoffset=${task.achievementRate > 100 ? 0 : (377 - (task.achievementRate / 100.0) * 377)}" />
+						</svg>
+						<div th:text="${task.achievementRate + '%'}">-</div>
+					</div>
+				</div>
 			</div>
 		</div>
+
 	</div>
 
 	<!-- タスク追加用のモーダル画面 -->
 	<div class="modal fade" id="taskEditModal" tabindex="-1" role="dialog" aria-labelledby="taskEditModalLabel"
 		aria-hidden="true">
-		<div class="modal-dialog" role="document">
+		<div class="modal-dialog modal-dialog-centered" role="document">
 			<div class="modal-content">
-				<div class="modal-header">
+				<div class="modal-header bg-primary text-white">
 					<h5 class="modal-title" id="taskEditModalLabel">タスク追加</h5>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
-				<div class="modal-body">
-					<!-- タスク追加用フォーム -->
-					<form id="taskEditForm" th:action="@{/home/editTask}" method="post">
-						<!-- タスクIDをhiddenで保持 -->
-						<input type="hidden" id="taskId" name="taskId" value="1">
-
+				<form id="taskEditForm" th:action="@{/home/editTask}" method="post">
+					<div class="modal-body">
 						<div class="form-group">
-							<label for="taskName">タスク名</label>
-							<input type="text" class="form-control" id="taskName" name="taskName" placeholder="タスク名を入力">
+							<label for="editTaskName" class="font-weight-bold">タスク名</label>
+							<input type="text" class="form-control border-primary shadow-sm" id="editTaskName"
+								name="taskName" placeholder="タスク名を入力">
 						</div>
 						<div class="form-group">
-							<label for="targetTime">目標時間</label>
-							<input type="number" class="form-control" id="targetTime" name="targetTime"
-								placeholder="分単位で入力">
+							<label for="editTargetTime" class="font-weight-bold">目標時間</label>
+							<input type="number" class="form-control border-primary shadow-sm" id="editTargetTime"
+								name="targetTime" placeholder="分単位で入力">
 						</div>
-						<button type="button" class="btn btn-secondary" data-dismiss="modal">キャンセル</button>
-						<button type="submit" class="btn btn-primary">登録</button>
-					</form>
-				</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">キャンセル</button>
+						<button type="submit" class="btn btn-success">登録</button>
+					</div>
+				</form>
 			</div>
 		</div>
 	</div>
+
 	<!-- 実績入力用のモーダル画面 -->
 	<div class="modal fade" id="achievementInputModal" tabindex="-1" role="dialog"
 		aria-labelledby="achievementInputModalLabel" aria-hidden="true">
-		<div class="modal-dialog" role="document">
+		<div class="modal-dialog modal-dialog-centered" role="document">
 			<div class="modal-content">
-				<div class="modal-header">
+				<div class="modal-header bg-primary text-white">
 					<h5 class="modal-title" id="achievementInputModalLabel">実績入力</h5>
-					<!-- タスク削除ボタン -->
-					<form th:action="@{/home/deleteTask}" method="post" class="delete-task">
+					<form th:action="@{/home/deleteTask}" method="post" class="delete-task ml-auto">
 						<input type="hidden" id="deleteTaskId" name="taskId">
-						<button type="submit" class="btn btn-danger">タスク削除</button>
+						<button type="submit" class="btn btn-danger btn-sm">タスク削除</button>
 					</form>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
 						<span aria-hidden="true">&times;</span>
 					</button>
 				</div>
-				<div class="modal-body">
-					<form th:action="@{/home/addAchievement}" method="post">
-						<input type="hidden" id="taskId" name="taskId">
+				<form id="achievementInputForm" th:action="@{/home/addAchievement}" method="post">
+					<div class="modal-body">
+						<input type="hidden" id="achievementTaskId" name="taskId">
 						<div class="form-group">
-							<label for="taskName">タスク名</label>
-							<input type="text" class="form-control" id="taskName" name="taskName" readonly>
+							<label for="achievementTaskName" class="font-weight-bold">タスク名</label>
+							<input type="text" class="form-control-plaintext" id="achievementTaskName" name="taskName"
+								readonly>
 						</div>
 						<div id="achievementContainer">
 							<div class="form-group">
-								<label for="description">作業内容</label>
-								<input type="text" class="form-control" name="achievementDetails[0].description"
+								<label for="achievementDescription" class="font-weight-bold">作業内容</label>
+								<input type="text" class="form-control border-primary shadow-sm"
+									id="achievementDescription" name="achievementDetails[0].description"
 									placeholder="作業内容を入力">
-								<label for="actualTime">作業時間</label>
-								<input type="number" class="form-control" name="achievementDetails[0].actualTime"
+							</div>
+							<div class="form-group">
+								<label for="achievementActualTime" class="font-weight-bold">作業時間</label>
+								<input type="number" class="form-control border-primary shadow-sm"
+									id="achievementActualTime" name="achievementDetails[0].actualTime"
 									placeholder="分単位で入力">
 							</div>
 						</div>
-						<button type="button" class="btn btn-secondary" data-dismiss="modal">キャンセル</button>
-						<button type="submit" class="btn btn-primary">登録</button>
-					</form>
-				</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-outline-secondary" data-dismiss="modal">キャンセル</button>
+						<button type="submit" class="btn btn-success">登録</button>
+					</div>
+				</form>
 			</div>
 		</div>
 	</div>
@@ -220,19 +314,18 @@
 	</div>
 
 
-	<!-- BootstrapのJSを追加 -->
+	<!-- JavaScript -->
 	<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 	<script>
 		// タスク追加モーダルが開かれたときにタスクの情報をフォームにセットするスクリプト
 		$('#taskEditModal').on('show.bs.modal', function (event) {
 			var button = $(event.relatedTarget); // モーダルを開いたボタン
-			var taskId = button.data('taskid'); // データ属性からタスクIDを取得
 			var taskName = button.data('taskname'); // データ属性からタスク名を取得
 			var targetTime = button.data('targettime'); // データ属性から目標時間を取得
 
 			var modal = $(this);
-			modal.find('#taskId').val(taskId); // フォームにタスクIDをセット
+			modal.find('#taskId').val(null); // フォームにタスクID(null)をセット
 			modal.find('#taskName').val(taskName); // フォームにタスク名をセット
 			modal.find('#targetTime').val(targetTime); // フォームに目標時間をセット
 		});
@@ -246,8 +339,8 @@
 			var deleteTaskId = button.data('taskid'); // データ属性からタスクIDを取得（タスク削除用）
 
 			var modal = $(this);
-			modal.find('#taskId').val(taskId); // hidden フィールドにタスクIDを設定
-			modal.find('#taskName').val(taskName); // readonly のタスク名フィールドに設定
+			modal.find('#achievementTaskId').val(taskId); // hidden フィールドにタスクIDを設定
+			modal.find('#achievementTaskName').val(taskName); // readonly のタスク名フィールドに設定
 			modal.find('#deleteTaskId').val(deleteTaskId); // hidden フィールドにタスクIDを設定
 		});
 
