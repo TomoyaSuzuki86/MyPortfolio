@@ -16,6 +16,8 @@ public class HomeForm {
   private int targetTime; // 目標時間
   private String description; // 実績内容
   private int actualTime; // 実績時間
+  private boolean hasAchievement100; // 100%達成フラグ
+
   
   // デフォルトコンストラクタ
   public HomeForm() {

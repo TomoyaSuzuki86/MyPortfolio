@@ -46,6 +46,12 @@ public class HomeController {
     if (userId != null) {
       // HomeForm オブジェクトを作成して、ユーザーのタスク情報を格納
       HomeForm homeForm = new HomeForm(tasksService.getTaskFormsByUserId(userId));
+
+      // すべてのタスクが100%以上の達成率を持つか確認
+      boolean hasAchievement100 = homeForm.getTasksList().stream().allMatch(task -> task.getAchievementRate() >= 100);
+
+      homeForm.setHasAchievement100(hasAchievement100); // フラグをセット
+
       model.addAttribute("homeForm", homeForm);
       return "home";
     } else {

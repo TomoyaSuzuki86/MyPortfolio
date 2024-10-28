@@ -49,14 +49,36 @@
 		.btn-danger {
 			padding: 2px 5px;
 		}
-		
+
 		.modal-header .close {
-		    padding: 1rem 1rem;
-		    margin: -1rem -1rem -1rem 0;
+			padding: 1rem 1rem;
+			margin: -1rem -1rem -1rem 0;
 		}
-		
+
 		.delete-task {
 			margin: 0rem 1rem 0rem auto;
+		}
+
+		.celebration {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			background: rgba(0, 0, 0, 0.7);
+			/* 背景を少し暗くする */
+			z-index: 1000;
+			display: none;
+			/* 初期状態では非表示 */
+		}
+
+		.celebration img {
+			width: 100%;
+			/* 最大幅を設定 */
+			height: auto;
 		}
 	</style>
 </head>
@@ -94,7 +116,7 @@
 						<td th:text="${task.taskName}"></td>
 						<td th:text="${task.targetTime} + ' min'"></td>
 						<td th:text="${task.actualTime} + ' min'"></td>
-						<td th:text="${task.achievementRate} + '%'"></td>
+						<td th:text="${task.achievementRate} + '%'" class="taskAchievementRate"></td>
 					</tr>
 				</tbody>
 			</table>
@@ -189,6 +211,15 @@
 			</div>
 		</div>
 	</div>
+
+	<!-- hidden フィールドで達成率100%フラグを渡す -->
+	<input type="hidden" id="hasAchievement100" th:value="${homeForm.hasAchievement100}" />
+	<!-- お祝い用のGIFアニメーション -->
+	<div id="celebration" class="celebration">
+		<img src="/images/celebration.gif" alt="Congratulations!">
+	</div>
+
+
 	<!-- BootstrapのJSを追加 -->
 	<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
@@ -205,8 +236,7 @@
 			modal.find('#taskName').val(taskName); // フォームにタスク名をセット
 			modal.find('#targetTime').val(targetTime); // フォームに目標時間をセット
 		});
-	</script>
-	<script>
+
 		// 実績入力モーダルが開かれるときにタスク情報をモーダルに設定するスクリプト
 		$('#achievementInputModal').on('show.bs.modal', function (event) {
 			var button = $(event.relatedTarget); // モーダルを開いたボタン
@@ -220,8 +250,17 @@
 			modal.find('#taskName').val(taskName); // readonly のタスク名フィールドに設定
 			modal.find('#deleteTaskId').val(deleteTaskId); // hidden フィールドにタスクIDを設定
 		});
-	</script>
 
+		$(document).ready(function () {
+			// hidden フィールドの値を取得
+			var hasAchievement100 = $('#hasAchievement100').val();
+
+			// 達成率100%のタスクが存在する場合、GIFを表示
+			if (hasAchievement100 === 'true') {
+				$('#celebration').fadeIn(1000).delay(3000).fadeOut(1000);
+			}
+		});
+	</script>
 </body>
 
 </html>
