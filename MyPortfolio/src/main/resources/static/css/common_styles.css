@@ -1,115 +1,200 @@
 /* common_styles.css */
 
 body {
-    background: linear-gradient(to right, #6a11cb, #2575fc);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 0;
+	background: linear-gradient(to right, #6a11cb, #2575fc);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	margin: 0;
+	min-height: 100vh;
+	height: auto;
 }
 
 .container {
-    background: white;
-    padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
-    width: 100%;
-    max-width: 400px;
+	background: white;
+	padding: 40px;
+	border-radius: 15px;
+	box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+	width: calc(100% - 20px);
+	margin: 20px 10px;
+	max-width: 900px;
+	box-sizing: border-box;
 }
 
 h2 {
-    text-align: center;
-    margin-bottom: 30px;
-    color: #333;
-    font-size: 1.8em;
+	text-align: center;
+	margin-bottom: 30px;
+	color: #333;
+	font-size: 1.8em;
 }
 
 .form-group {
-    margin-bottom: 20px;
+	margin-bottom: 20px;
 }
 
 .form-group label {
-    font-weight: bold;
-    display: block;
-    margin-bottom: 8px;
-    color: #444;
+	font-weight: bold;
+	display: block;
+	margin-bottom: 8px;
+	color: #444;
 }
 
 .form-control {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-sizing: border-box;
-    transition: border-color 0.3s ease-in-out;
+	width: 100%;
+	padding: 10px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+	box-sizing: border-box;
+	transition: border-color 0.3s ease-in-out;
 }
 
 .form-control:focus {
-    outline: none;
-    border-color: #2575fc;
-    box-shadow: 0 0 8px rgba(37, 117, 252, 0.2);
+	outline: none;
+	border-color: #2575fc;
+	box-shadow: 0 0 8px rgba(37, 117, 252, 0.2);
 }
 
 .btn-primary {
-    width: 100%;
-    background-color: #2575fc;
-    border: none;
-    color: white;
-    padding: 12px;
-    font-size: 1em;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+	width: 100%;
+	background-color: #2575fc;
+	border: none;
+	color: white;
+	padding: 12px;
+	font-size: 1em;
+	border-radius: 5px;
+	cursor: pointer;
+	transition: background-color 0.3s ease;
 }
 
 .btn-primary:hover {
-    background-color: #1a5bb8;
+	background-color: #1a5bb8;
 }
 
 .text-danger {
-    color: #d9534f;
-    font-size: 0.9em;
+	color: #d9534f;
+	font-size: 0.9em;
 }
 
 .link {
-    text-align: center;
-    margin-top: 20px;
+	text-align: center;
+	margin-top: 20px;
 }
 
 .link a {
-    color: #2575fc;
-    text-decoration: none;
-    font-weight: bold;
-    transition: color 0.3s ease;
+	color: #2575fc;
+	text-decoration: none;
+	font-weight: bold;
+	transition: color 0.3s ease;
 }
 
 .link a:hover {
-    color: #1a5bb8;
+	color: #1a5bb8;
 }
 
 .alert-danger {
-    text-align: center;
-    color: white;
-    background-color: #d9534f;
-    padding: 15px;
-    border-radius: 5px;
-    margin-bottom: 20px;
+	text-align: center;
+	color: white;
+	background-color: #d9534f;
+	padding: 15px;
+	border-radius: 5px;
+	margin-bottom: 20px;
 }
 
 .login-card {
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+	padding: 20px;
+	border-radius: 10px;
+	box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
 
 .card-title {
-    margin-bottom: 20px;
-    color: #444;
+	margin-bottom: 20px;
+	color: #444;
 }
 
 .btn-block {
-    display: block;
-    width: 100%;
+	display: block;
+	width: 100%;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-bottom: 20px;
+}
+
+th,
+td {
+	padding: 12px;
+	text-align: center;
+	border-bottom: 1px solid #e1e1e1;
+	cursor: pointer;
+}
+
+th {
+	background-color: #e9f4ff;
+	color: #333;
+	font-weight: bold;
+}
+
+td {
+	background-color: #ffffff;
+	color: #555;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 600px) {
+	table {
+		display: block;
+		overflow-x: auto;
+		white-space: nowrap;
+	}
+
+	.summary-container .row {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+	
+	#celebration img {
+	    content: url('/images/celebration_mobile.gif');
+	}
+}
+
+.summary-container {
+	margin-top: 30px;
+	padding: 20px;
+	background: #e9f4ff;
+	border-radius: 8px;
+}
+
+.summary-title {
+	text-align: center;
+	font-size: 1.6rem;
+	color: #0066cc;
+	font-weight: bold;
+	margin-bottom: 20px;
+}
+
+.circle {
+	width: 150px;
+	height: 150px;
+	margin: 0 auto;
+	position: relative;
+}
+
+.circle svg {
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+.circle div {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font-size: 1.5rem;
+	color: #007bff;
+	font-weight: bold;
 }

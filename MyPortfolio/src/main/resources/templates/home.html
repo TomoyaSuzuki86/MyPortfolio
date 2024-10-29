@@ -3,27 +3,12 @@
 
 <head>
 	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>ホーム画面</title>
 	<!-- BootstrapのCSSを追加 -->
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 	<link rel="stylesheet" href="/css/common_styles.css">
 	<style>
-		body {
-			background-color: #f4f8fc;
-			font-family: 'Arial', sans-serif;
-			color: #333;
-			height: 100%;
-		}
-
-		.container {
-			max-width: 900px;
-			margin: 40px auto;
-			padding: 20px;
-			background: #ffffff;
-			border-radius: 8px;
-			box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-		}
-
 		.title {
 			font-size: 2rem;
 			font-weight: bold;
@@ -39,31 +24,6 @@
 			margin-bottom: 20px;
 		}
 
-		table {
-			width: 100%;
-			border-collapse: collapse;
-			margin-bottom: 20px;
-		}
-
-		th,
-		td {
-			padding: 12px;
-			text-align: center;
-			border-bottom: 1px solid #e1e1e1;
-			cursor: pointer;
-		}
-
-		th {
-			background-color: #e9f4ff;
-			color: #333;
-			font-weight: bold;
-		}
-
-		td {
-			background-color: #ffffff;
-			color: #555;
-		}
-
 		.btn-primary {
 			display: block;
 			width: fit-content;
@@ -77,44 +37,6 @@
 
 		.btn-primary:hover {
 			background-color: #0056b3;
-		}
-
-		.summary-container {
-			margin-top: 30px;
-			padding: 20px;
-			background: #e9f4ff;
-			border-radius: 8px;
-		}
-
-		.summary-title {
-			text-align: center;
-			font-size: 1.6rem;
-			color: #0066cc;
-			font-weight: bold;
-			margin-bottom: 20px;
-		}
-
-		.circle {
-			width: 150px;
-			height: 150px;
-			margin: 0 auto;
-			position: relative;
-		}
-
-		.circle svg {
-			position: absolute;
-			top: 0;
-			left: 0;
-		}
-
-		.circle div {
-			position: absolute;
-			top: 50%;
-			left: 50%;
-			transform: translate(-50%, -50%);
-			font-size: 1.5rem;
-			color: #007bff;
-			font-weight: bold;
 		}
 
 		.logout-button {
@@ -350,7 +272,7 @@
 
 			// 達成率100%のタスクが存在する場合、GIFを表示
 			if (hasAchievement100 === 'true') {
-				$('#celebration').fadeIn(1000).delay(3000).fadeOut(1000);
+				$('#celebration').fadeIn(1000).delay(1000).fadeOut(1000);
 			}
 		});
 	</script>
