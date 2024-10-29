@@ -99,9 +99,13 @@
 		<a class="logout-button" th:href="@{/home/logout}">
 			<i class="fas fa-sign-out-alt logout-icon"></i> ログアウト
 		</a>
+		<!-- タスクが存在しない場合のメッセージ表示 -->
+		<div th:if="${homeForm.tasksList.empty}" class="alert alert-info">
+			<p>タスクを登録してください。</p>
+		</div>
 
-		<!-- 今日のタスク一覧 -->
-		<div class="task-list">
+		<!-- タスク一覧 -->
+		<div th:if="${!homeForm.tasksList.empty}" class="task-list">
 			<div class="task-list-header">今日のタスク一覧</div>
 			<table class="table">
 				<thead>
@@ -122,12 +126,11 @@
 					</tr>
 				</tbody>
 			</table>
-			<button type="button" class="btn btn-primary" data-toggle="modal"
-				data-target="#taskEditModal">タスク追加</button>
 		</div>
+		<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#taskEditModal">タスク追加</button>
 
 		<!-- 進捗サマリ -->
-		<div class="summary-container">
+		<div th:if="${!homeForm.tasksList.empty}" class="summary-container">
 			<div class="summary-title">進捗サマリ</div>
 			<div class="row">
 				<div th:each="task : ${homeForm.tasksList}" class="col-md-6 text-center mb-4">
