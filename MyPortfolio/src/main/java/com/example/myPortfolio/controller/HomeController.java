@@ -32,7 +32,6 @@ public class HomeController {
   @Autowired
   private AchievementsService achievementsService;
 
-
   /**
    * ホーム画面の表示
    *
@@ -47,10 +46,18 @@ public class HomeController {
       // HomeForm オブジェクトを作成して、ユーザーのタスク情報を格納
       HomeForm homeForm = new HomeForm(tasksService.getTaskFormsByUserId(userId));
 
-      // すべてのタスクが100%以上の達成率を持つか確認
-      boolean hasAchievement100 = homeForm.getTasksList().stream().allMatch(task -> task.getAchievementRate() >= 100);
+      // 実績登録後のフラグがセッションに存在する場合のみ、達成率を確認
+      Boolean isAchievementUpdated = (Boolean) httpSession.getAttribute("isAchievementUpdated");
+      if (Boolean.TRUE.equals(isAchievementUpdated)) {
+        // すべてのタスクが100%以上の達成率を持つか確認
+        boolean hasAchievement100 = homeForm.getTasksList().stream().allMatch(task -> task.getAchievementRate() >= 100);
+        homeForm.setHasAchievement100(hasAchievement100); // フラグをセット
 
-      homeForm.setHasAchievement100(hasAchievement100); // フラグをセット
+        // フラグをリセット
+        httpSession.removeAttribute("isAchievementUpdated");
+      } else {
+        homeForm.setHasAchievement100(false);
+      }
 
       model.addAttribute("homeForm", homeForm);
       return "home";
@@ -83,6 +90,9 @@ public class HomeController {
         for (AchievementDetail detail : taskAchievementForm.getAchievementDetails()) {
           achievementsService.createAchievement(task, detail.getDescription(), detail.getActualTime());
         }
+
+        // 実績登録後のフラグをセッションに保存
+        httpSession.setAttribute("isAchievementUpdated", true);
       }
       return "redirect:/home";
     } catch (Exception e) {
@@ -112,7 +122,7 @@ public class HomeController {
     }
     return "redirect:/home"; // 削除完了後、ホーム画面へリダイレクト
   }
-  
+
   /**
    * ログアウト処理
    *
